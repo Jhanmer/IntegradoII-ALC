@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from app.config import get_db_connection  
 
-main = Blueprint('main', __name__)
+main = Blueprint('main', __name__, url_prefix='/')
 
 @main.route('/')
 def index():
