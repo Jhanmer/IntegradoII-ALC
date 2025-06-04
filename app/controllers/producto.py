@@ -1,9 +1,6 @@
-# app/controllers/producto.py
-
 from flask import Blueprint, render_template, request, redirect, url_for
-from app.models import producto as producto_model # Importa el modelo con un alias para evitar conflicto de nombres
+from app.models import producto as producto_model 
 
-# ¡Asegúrate de que el Blueprint se llame producto_bp!
 producto_bp = Blueprint('producto', __name__, url_prefix='/productos')
 
 @producto_bp.route('/', methods=['GET', 'POST'])

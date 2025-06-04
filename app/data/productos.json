@@ -1,0 +1,35 @@
+[
+    {
+        "id": 1,
+        "descripcion": "Teclado Mecánico RGB",
+        "sku": "KB-MEC-001",
+        "marca": "TechKeys",
+        "proveedor": "DistribuidorTec",
+        "division": "Accesorios",
+        "estado": true,
+        "oh_disponible": 150,
+        "nuevo_oh": 150
+    },
+    {
+        "id": 2,
+        "descripcion": "Mouse Inalámbrico Ergonómico",
+        "sku": "MO-WIRE-ERG-002",
+        "marca": "ErgoGear",
+        "proveedor": "LogiPro",
+        "division": "Periféricos",
+        "estado": false,
+        "oh_disponible": 75,
+        "nuevo_oh": 70
+    },
+    {
+        "id": 3,
+        "descripcion": "Monitor UltraWide 34 Pulgadas",
+        "sku": "MON-UW-34-003",
+        "marca": "ViewSonic",
+        "proveedor": "ElectroMayor",
+        "division": "Monitores",
+        "estado": true,
+        "oh_disponible": 30,
+        "nuevo_oh": 30
+    }
+]
