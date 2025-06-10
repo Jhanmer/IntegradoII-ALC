@@ -32,6 +32,12 @@
                 </a>
             </li>
             
+            <li class="sidebar-item {% if request.endpoint == 'main.predecir_stock' %}active{% endif %}">
+                <a class="sidebar-link" href="{{ url_for('main.predecir_stock') }}">
+                    <i class="align-middle" data-feather="activity"></i> <span class="align-middle">Predecir Stock</span>
+                </a>
+            </li>
+            
             </ul>
     </div>
 </nav>

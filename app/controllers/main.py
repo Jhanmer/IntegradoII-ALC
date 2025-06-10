@@ -10,3 +10,7 @@ def index():
 @main_bp.route('/pedidos') # Nueva ruta para Pedidos
 def pedidos():
     return render_template('Pedidos.html')
+
+@main_bp.route('/predecir-stock')
+def predecir_stock():
+    return render_template('predecir_stock.html')

@@ -1,0 +1,92 @@
+{% extends "layaout.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Predicción de Stock Semanal</h1>
+    <form>
+        <div class="mb-3">
+            <label for="producto" class="form-label">Producto</label>
+            <select class="form-select" id="producto">
+                <option>Producto A</option>
+                <option>Producto B</option>
+                <option>Producto C</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="anio" class="form-label">Año</label>
+            <select class="form-select" id="anio">
+                <option>2024</option>
+                <option>2025</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="mes" class="form-label">Mes</label>
+            <select class="form-select" id="mes">
+                <option>Enero</option>
+                <option>Febrero</option>
+                <option>Marzo</option>
+                <option>Abril</option>
+                <option>Mayo</option>
+                <option>Junio</option>
+                <option>Julio</option>
+                <option>Agosto</option>
+                <option>Septiembre</option>
+                <option>Octubre</option>
+                <option>Noviembre</option>
+                <option>Diciembre</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="semana" class="form-label">Semana</label>
+            <select class="form-select" id="semana">
+                <option>Semana 1</option>
+                <option>Semana 2</option>
+                <option>Semana 3</option>
+                <option>Semana 4</option>
+            </select>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="mostrarPrediccion()">Predecir</button>
+    </form>
+    <hr>
+    <h3>Resultado de la predicción</h3>
+    <p id="resultado">Selecciona un producto, año, mes y semana para ver la predicción.</p>
+</div>
+
+<script>
+function mostrarPrediccion() {
+    const producto = document.getElementById('producto').value;
+    const anio = parseInt(document.getElementById('anio').value);
+    const mes = document.getElementById('mes').value;
+    const semana = document.getElementById('semana').value;
+
+    // Obtener fecha actual
+    const fechaActual = new Date();
+    const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+    const anioActual = fechaActual.getFullYear();
+    const mesActual = meses[fechaActual.getMonth()];
+    const semanaActual = Math.ceil((fechaActual.getDate() + new Date(anio, meses.indexOf(mes), 1).getDay()) / 7);
+
+    // Validar si la predicción es para el pasado
+    if (
+        anio < anioActual ||
+        (anio === anioActual && meses.indexOf(mes) < meses.indexOf(mesActual)) ||
+        (anio === anioActual && mes === mesActual && parseInt(semana.replace('Semana ','')) < semanaActual)
+    ) {
+        document.getElementById('resultado').innerHTML = 
+            `<span class="badge bg-danger">Solo puedes predecir semanas futuras o actuales.</span>`;
+        return;
+    }
+
+    // Valores de ejemplo para el prototipo
+    let prediccion = {
+        "Producto A": ["120", "110", "130", "125"],
+        "Producto B": ["80", "90", "85", "95"],
+        "Producto C": ["60", "70", "65", "75"]
+    };
+    let semanaNum = document.getElementById('semana').selectedIndex;
+    let stock = prediccion[producto][semanaNum];
+    document.getElementById('resultado').innerHTML = 
+        `Stock estimado para <strong>${producto}</strong> en <strong>${semana}</strong> de <strong>${mes} ${anio}</strong>: <span class="badge bg-success">${stock} unidades</span>`;
+}
+</script>
+{% endblock %}
