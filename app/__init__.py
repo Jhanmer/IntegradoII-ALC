@@ -20,10 +20,4 @@ def create_app():
     app.register_blueprint(pedido_bp)
     # <<-- -->>
 
-
-    # --- Rutas Globales o de Redirección ---
-    @app.route('/')
-    def root_redirect():
-        return redirect(url_for('main.index'))
-
     return app

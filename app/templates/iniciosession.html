@@ -10,13 +10,13 @@
 	<meta name="keywords" content="adminkit, bootstrap, bootstrap 5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
 
 	<link rel="preconnect" href="https://fonts.gstatic.com">
-	<link rel="shortcut icon" href="img/icons/icon-48x48.png" />
+	<link rel="shortcut icon" href="{{ url_for('static', filename='img/icons/icon-48x48.png') }}" />
 
 	<link rel="canonical" href="https://demo-basic.adminkit.io/pages-sign-in.html" />
 
-	<title>Sign In | AdminKit Demo</title>
+	<title>Inicio de Sessión | StockSense</title>
 
-	<link href="css/app.css" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 
@@ -53,7 +53,7 @@
 											</div>
 										</div>
 										<div class="d-grid gap-2 mt-3">
-											<a href="index.html" class="btn btn-lg btn-primary">Sign in</a>
+											<a href="{{ url_for('main.dashboard_index') }}" class="btn btn-lg btn-primary">Sign in</a>
 										</div>
 									</form>
 								</div>
@@ -68,7 +68,7 @@
 		</div>
 	</main>
 
-	<script src="js/app.js"></script>
+	<script src="{{ url_for('static', filename='js/app.js') }}"></script>
 
 </body>
 

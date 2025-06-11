@@ -5,7 +5,7 @@ main_bp = Blueprint('main', __name__)
 
 @main_bp.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('home.html') #
 
 @main_bp.route('/pedidos') # Nueva ruta para Pedidos
 def pedidos():
@@ -14,3 +14,11 @@ def pedidos():
 @main_bp.route('/predecir-stock')
 def predecir_stock():
     return render_template('predecir_stock.html')
+
+@main_bp.route('/iniciar-sesion') # Puedes elegir la URL que prefieras
+def iniciar_sesion():
+    return render_template('iniciosession.html')
+
+@main_bp.route('/dashboard') # Puedes elegir la URL que prefieras, por ejemplo '/dashboard'
+def dashboard_index():
+    return render_template('index.html')

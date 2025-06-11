@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>StockSense</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/stylehome.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/icons/icon-48x48.png') }}" />
+  </head>
+  <body>
+    
+    <div class="navbar bg-white">
+        <div class="nav-logo">
+          <a href="#">
+            <img src="{{ url_for('static', filename='img/avatars/stock-logo.png') }}" alt="">
+          </a>
+        </div>
+        <div class="nav-items">
+          <ul class="my-0">
+            <li><a href="#home"> Home </a></li>
+            <li><a href="#Servicios"> Servicios </a></li>
+            <!-- <li><a href="#"> </a></li>
+            <li><a href="#"> </a></li> -->
+            <li><a href="{{ url_for('main.iniciar_sesion') }}"> Inicia Sesión </a></li>
+          </ul>
+        </div>
+        <div class="nav-button">
+          <div class="anim-layer"></div>
+          <a href="#">Admin Registro</a>
+        </div>
+        <div id="hamburger-menu">&#9776;</div>
+      </div>
+  
+      <div id="mobile-menu">
+        <div class="mobile-nav-items">
+          <ul>
+            <li><a href="#home"> Home </a></li>
+            <li><a href="#Servicios"> Servicios </a></li>
+            <!-- <li><a href="#"> </a></li>
+            <li><a href="#"> </a></li> -->
+            <li><a href="{{ url_for('main.iniciar_sesion') }}"> Inicia Sesión </a></li>
+          </ul>
+        </div>
+        <div class="mobile-nav-button">
+          <div class="anim-layer"></div>
+          <a href="{{ url_for('main.iniciar_sesion') }}">Inicia Sesión</a>
+        </div>
+        <div id="hamburger-cross">&#10006;</div>
+      </div>
+
+      <main>
+        <section id="home" class="hero-section">
+            <div class="container mt-5">
+                <div class="row">
+                    <div class="col-lg-6 d-flex flex-column align-items-center">
+                        <div class="hero-content">
+                            <h1 class="mb-4">Optimizamos tu inventario.</h1>
+                            <p class="mb-5">Control total sobre su inventario mediante pronósticos inteligentes, seguimiento del flujo en tiempo real y análisis predictivo.</p>
+                            <a class="button w-100 d-inline-block text-center d-lg-inline" href="">Comienza a gestionar de forma inteligente</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 d-none d-lg-block">
+                        <img class="img-fluid" src="{{ url_for('static', filename='img/avatars/analiticas.jpg') }}" alt="">
+                    </div>
+                </div>
+            </div>
+        </section>
+        <br>
+        <section id="Servicios" class="working-process my-5">
+          <div class="container">
+            <div class="row">
+              <div class="row d-flex flex-nowrap flex-row">
+                <div class="heading d-block text-center text-lg-start d-lg-flex align-items-lg-center mb-5">
+                  <h2 class="mb-0 d-inline-block mb-4 mb-lg-0">Nuestro Proceso de Trabajo</h2>
+                  <p class="ps-4 mb-0">Guía paso a paso para optimizar tu inventario</p>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="accordion mt-2 mt-lg-5" id="accordionExample">
+                
+                <div class="accordion-item mb-4">
+                  <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                      <span class="accordian-numbers">01</span> Análisis Inicial
+                    </button>
+                  </h2>
+                  <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                      Evaluamos el estado actual del inventario, los procesos de abastecimiento y los puntos críticos de quiebre de stock. Este análisis es clave para entender el contexto y definir mejoras.
+                    </div>
+                  </div>
+                </div>
+        
+                <div class="accordion-item mb-4">
+                  <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                      <span class="accordian-numbers">02</span> Configuración del Sistema
+                    </button>
+                  </h2>
+                  <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                      Se ajustan los parámetros del sistema: categorías de productos, niveles mínimos y máximos de stock, y reglas de reposición según la rotación histórica.
+                    </div>
+                  </div>
+                </div>
+        
+                <div class="accordion-item mb-4">
+                  <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                      <span class="accordian-numbers">03</span> Integración de Datos
+                    </button>
+                  </h2>
+                  <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                      Conectamos tus fuentes de datos (ventas, proveedores, almacenes) para automatizar la entrada de información y mantener el inventario actualizado en tiempo real.
+                    </div>
+                  </div>
+                </div>
+        
+                <div class="accordion-item mb-4">
+                  <h2 class="accordion-header" id="headingFour">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                      <span class="accordian-numbers">04</span> Predicción de Demanda
+                    </button>
+                  </h2>
+                  <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                      Aplicamos modelos predictivos para estimar la demanda futura, anticipando necesidades de reabastecimiento y evitando tanto el sobrestock como las rupturas.
+                    </div>
+                  </div>
+                </div>
+        
+                <div class="accordion-item mb-4">
+                  <h2 class="accordion-header" id="headingFive">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                      <span class="accordian-numbers">05</span> Monitoreo y Alertas
+                    </button>
+                  </h2>
+                  <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                      El sistema monitorea constantemente los niveles de stock y envía alertas automáticas cuando se detectan desviaciones o se alcanzan niveles críticos.
+                    </div>
+                  </div>
+                </div>
+        
+                <div class="accordion-item mb-4">
+                  <h2 class="accordion-header" id="headingSix">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+                      <span class="accordian-numbers">06</span> Mejora Continua
+                    </button>
+                  </h2>
+                  <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingSix" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                      Analizamos métricas y resultados periódicamente para ajustar estrategias, mejorar la precisión de las predicciones y aumentar la eficiencia operativa.
+                    </div>
+                  </div>
+                </div>
+        
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+      
+      <footer>
+        <div class="container">
+          <div class="row p-5">
+            <div class="col-lg-12">
+                <div class="row">
+                  <div class="col-lg-3 text-center text-lg-start mb-5 mb-lg-0">
+                    <img src="{{ url_for('static', filename='img/avatar/analiticas.jpg') }}" alt="">
+                  </div>
+                </div>
+                <div class="row pb-4 pt-3 py-lg-5 py-lg-5 footer-info text-center text-lg-start">
+                  <div class="col-lg-6">
+                    <h2 class="footer-heading px-2">Contáctanos:</h3>
+                    <p class="text-white">Email: <a class="text-white text-decoration-none" href="mailto:info@positivus.com">stocksense@gmail.com</a></p>
+                    <p class="text-white">Teléfono: <a class="text-white text-decoration-none" href="tel:5555678901">+51 </a></p>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="row subscription">
+                      <div class="col-lg-6">
+                        <input class="form-control" placeholder="Email" type="email">
+                      </div>
+                      <div class="col-lg-6 mt-3 mt-lg-0">
+                        <input class="form-control" type="submit" value="Escríbenos al correo">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="social-icons d-block d-lg-none pt-5">
+                    <ul class="ps-0 d-flex justify-content-center">
+                      <li class="list-unstyled">
+                        <a href="#">
+                          <i class="fa-brands text-dark fa-facebook-f"></i>
+                        </a>
+                      </li>
+                      <li class="list-unstyled ps-3">
+                        <a href="#">
+                          <i class="fa-brands text-dark fa-linkedin-in"></i>
+                        </a>
+                      </li>
+                      <li class="list-unstyled ps-3">
+                        <a href="#">
+                          <i class="fa-brands text-dark fa-twitter"></i>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="row pt-5">
+                  <div class="col-lg-12 d-flex flex-column flex-lg-row">
+                    <p class="text-white mb-0 text-center text-lg-start mb-3 mb-lg-0">© 2025 StockSense. Todos los derechos reservados.</p>
+                    <!-- <a class="text-white ps-4 text-center text-lg-start" href="#">Privacy Policy</a> -->
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  </body>
+</html>
