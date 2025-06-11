@@ -10,6 +10,12 @@
 		<button class="btn btn-success" type="submit">Agregar Marca</button>
 	</form>
 
+	<form action="{{ url_for('producto.agregar_proveedor') }}" method="POST" class="d-flex mt-2 mb-4">
+	<input name="nuevo_proveedor" class="form-control me-2" placeholder="Nuevo proveedor" required>
+	<button class="btn btn-success" type="submit">Agregar Proveedor</button>
+	</form>
+
+
 	<!-- Formulario para agregar producto -->
 	<div class="card mb-4">
 		<div class="card-header">
@@ -42,7 +48,11 @@
 					</div>
 					<div class="col-md-6">
 						<label>Proveedor</label>
-						<input name="proveedor" class="form-control">
+						<select name="proveedor" class="form-select">
+							{% for id, nombre in proveedores %}
+								<option value="{{ id }}">{{ nombre }}</option>
+							{% endfor %}
+						</select>
 					</div>
 				</div>
 

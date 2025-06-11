@@ -12,8 +12,8 @@ def index():
             datos = (
                 request.form['descripcion'],
                 request.form['sku'],
-                int(request.form['marca']),         # ID
-                request.form['proveedor'],          # Texto
+                int(request.form['marca']),  
+                int(request.form['proveedor']),       # ID       # Texto
                 request.form['division'],           # Texto
                 request.form['estado'].lower() == 'activo',
                 int(request.form['oh_disponible']),
@@ -25,11 +25,24 @@ def index():
             print("Error al insertar producto:", e)
     productos_lista = producto_model.obtener_todos()
     marcas_lista = producto_model.obtener_marcas()
-    return render_template('Productos.html', productos=productos_lista, marcas=marcas_lista)
+    proveedores_lista = producto_model.obtener_proveedores()
+    return render_template(
+    'Productos.html',
+    productos=productos_lista,
+    marcas=marcas_lista,
+    proveedores=proveedores_lista
+)
 
 
 @producto_bp.route('/agregar_marca', methods=['POST'])
 def agregar_marca():
     nombre = request.form['nueva_marca']
     producto_model.insertar_marca(nombre)
+    return redirect(url_for('producto.index'))
+
+@producto_bp.route('/agregar_proveedor', methods=['POST'])
+def agregar_proveedor():
+    nombre = request.form.get('nuevo_proveedor')
+    if nombre:
+        producto_model.agregar_proveedor(nombre)
     return redirect(url_for('producto.index'))
