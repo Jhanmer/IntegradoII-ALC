@@ -5,7 +5,7 @@ from app.config import get_db_connection
 def obtener_todos():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM productos ORDER BY id DESC")
+    cur.execute("SELECT * FROM productos ORDER BY id ASC")
     resultados = cur.fetchall()
     cur.close()
     conn.close()
