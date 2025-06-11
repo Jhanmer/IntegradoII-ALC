@@ -15,10 +15,10 @@ def pedidos():
 def predecir_stock():
     return render_template('predecir_stock.html')
 
-@main_bp.route('/iniciar-sesion') # Puedes elegir la URL que prefieras
+@main_bp.route('/iniciar-sesion') 
 def iniciar_sesion():
     return render_template('iniciosession.html')
 
-@main_bp.route('/dashboard') # Puedes elegir la URL que prefieras, por ejemplo '/dashboard'
+@main_bp.route('/dashboard') 
 def dashboard_index():
     return render_template('index.html')

@@ -1,3 +1,5 @@
+# app/routes/producto.py
+
 from flask import Blueprint, render_template, request, redirect, url_for
 from app.models import producto as producto_model 
 
@@ -10,9 +12,9 @@ def index():
             datos = (
                 request.form['descripcion'],
                 request.form['sku'],
-                request.form['marca'],
-                request.form['proveedor'],
-                request.form['division'],
+                int(request.form['marca']),         # ID
+                request.form['proveedor'],          # Texto
+                request.form['division'],           # Texto
                 request.form['estado'].lower() == 'activo',
                 int(request.form['oh_disponible']),
                 int(request.form['nuevo_oh'])
@@ -21,6 +23,13 @@ def index():
             return redirect(url_for('producto.index'))
         except Exception as e:
             print("Error al insertar producto:", e)
-
     productos_lista = producto_model.obtener_todos()
-    return render_template('Productos.html', productos=productos_lista)
+    marcas_lista = producto_model.obtener_marcas()
+    return render_template('Productos.html', productos=productos_lista, marcas=marcas_lista)
+
+
+@producto_bp.route('/agregar_marca', methods=['POST'])
+def agregar_marca():
+    nombre = request.form['nueva_marca']
+    producto_model.insertar_marca(nombre)
+    return redirect(url_for('producto.index'))
