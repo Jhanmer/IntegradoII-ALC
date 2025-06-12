@@ -26,3 +26,7 @@ def dashboard_index():
 @main_bp.route('/gestion-pedidos') 
 def gestion_pedidos():
     return render_template('GPedidos.html')
+
+@main_bp.route('/usuarios')
+def usuarios():
+    return render_template('usuarios.html')

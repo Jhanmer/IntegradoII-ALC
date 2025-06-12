@@ -42,6 +42,16 @@
                     <i class="align-middle" data-feather="shopping-bag"></i> <span class="align-middle">Listado de Pedidos</span>
                 </a>
             </li>
+
+            <li class="sidebar-header">
+                Gestión de Usuario
+            </li>
+
+            <li class="sidebar-item {% if request.endpoint == 'main.usuarios' %}active{% endif %}">
+                <a class="sidebar-link" href="{{ url_for('main.usuarios') }}">
+                    <i class="align-middle" data-feather="activity"></i> <span class="align-middle">Gestión Usuario</span>
+                </a>
+            </li>
             
             </ul>
     </div>

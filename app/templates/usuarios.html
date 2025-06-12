@@ -1,0 +1,105 @@
+{% extends "layaout.html" %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <h1 class="h3 mb-3"><strong>Gestión</strong> de Usuarios</h1>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Registrar Nuevo Usuario</h5>
+                </div>
+                <div class="card-body">
+                    <form id="userForm" class="row g-3">
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="nombre" placeholder="Nombre completo" required>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="email" class="form-control" id="correo" placeholder="Correo electrónico" required>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="password" class="form-control" id="password" placeholder="Contraseña" required>
+                        </div>
+                        <div class="col-md-4">
+                            <select id="rol" class="form-select" required>
+                                <option value="">Seleccione un rol</option>
+                                <option value="Administrador">Administrador</option>
+                                <option value="Mercader">Mercader</option>
+                                <option value="Supervisor">Supervisor</option>
+                                <option value="Jefe de almacén">Jefe de almacén</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">Registrar Usuario</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Lista de Usuarios</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover my-0">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Correo</th>
+                                <th>Rol</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userList">
+                            <!-- Los usuarios se insertarán aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.getElementById("userForm");
+        const userList = document.getElementById("userList");
+
+        form.addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const nombre = document.getElementById("nombre").value.trim();
+            const correo = document.getElementById("correo").value.trim();
+            const password = document.getElementById("password").value;
+            const rol = document.getElementById("rol").value;
+
+            if (!nombre || !correo || !password || !rol) return;
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${nombre}</td>
+                <td>${correo}</td>
+                <td>${rol}</td>
+                <td>
+                    <button class="btn btn-danger btn-sm" onclick="this.closest('tr').remove()">
+                        <i class="align-middle" data-feather="trash-2"></i>
+                    </button>
+                </td>
+            `;
+
+            userList.appendChild(tr);
+            form.reset();
+            
+            // Reinicializar los iconos de Feather
+            feather.replace();
+        });
+    });
+</script>
+{% endblock %}
