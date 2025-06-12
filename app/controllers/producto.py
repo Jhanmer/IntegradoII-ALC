@@ -13,8 +13,8 @@ def index():
                 request.form['descripcion'],
                 request.form['sku'],
                 int(request.form['marca']),  
-                int(request.form['proveedor']),       # ID       # Texto
-                request.form['division'],           # Texto
+                int(request.form['proveedor']),       
+                request.form['division'],           
                 request.form['estado'].lower() == 'activo',
                 int(request.form['oh_disponible']),
                 int(request.form['nuevo_oh'])
