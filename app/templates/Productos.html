@@ -95,6 +95,11 @@
 		</div>
 	</div>
 
+	<div class="mb-3">
+		<button id="exportExcel" class="btn btn-success">Exportar a Excel</button>
+		<button id="exportPDF" class="btn btn-danger">Exportar a PDF</button>
+	</div>
+
 	<!-- Tabla de productos -->
 	<div class="card">
 		<div class="card-header">
@@ -137,10 +142,32 @@
 {% endblock %}
 
 {% block scripts %}	
-<script>
-	function generarSKU() {
-		const sku = Math.floor(10000000 + Math.random() * 90000000);
-		document.getElementById('sku').value = sku;
-	}
-</script>
+	<script>
+		function generarSKU() {
+			const sku = Math.floor(10000000 + Math.random() * 90000000);
+			document.getElementById('sku').value = sku;
+		}
+	</script>
+
+	<!-- SheetJS para exportar a Excel -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+	<!-- jsPDF y autoTable para exportar a PDF -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+	<script>
+		document.getElementById('exportExcel').addEventListener('click', function () {
+			const table = document.querySelector('table');
+			const wb = XLSX.utils.table_to_book(table, { sheet: "Inventario" });
+			XLSX.writeFile(wb, "inventario.xlsx");
+		});
+
+		document.getElementById('exportPDF').addEventListener('click', function () {
+			const { jsPDF } = window.jspdf;
+			const doc = new jsPDF();
+			doc.autoTable({ html: 'table' });
+			doc.save('inventario.pdf');
+		});
+	</script>
 {% endblock %}
