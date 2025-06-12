@@ -3,90 +3,150 @@
 {% block content %}
 <div class="container mt-4">
     <h1 class="mb-4">Predicción de Stock Semanal</h1>
-    <form>
+    <form onsubmit="event.preventDefault(); mostrarPrediccion();">
         <div class="mb-3">
             <label for="producto" class="form-label">Producto</label>
             <select class="form-select" id="producto">
-                <option>Producto A</option>
-                <option>Producto B</option>
-                <option>Producto C</option>
+                <option>Mayonesa Alacena</option>
+                <option>Aceite Primor</option>
+                <option>Fideos Victorio</option>
             </select>
         </div>
         <div class="mb-3">
-            <label for="anio" class="form-label">Año</label>
-            <select class="form-select" id="anio">
-                <option>2024</option>
-                <option>2025</option>
-            </select>
+          <label class="form-label">Selecciona semana</label>
+          <div id="calendario"></div>
         </div>
-        <div class="mb-3">
-            <label for="mes" class="form-label">Mes</label>
-            <select class="form-select" id="mes">
-                <option>Enero</option>
-                <option>Febrero</option>
-                <option>Marzo</option>
-                <option>Abril</option>
-                <option>Mayo</option>
-                <option>Junio</option>
-                <option>Julio</option>
-                <option>Agosto</option>
-                <option>Septiembre</option>
-                <option>Octubre</option>
-                <option>Noviembre</option>
-                <option>Diciembre</option>
-            </select>
-        </div>
-        <div class="mb-3">
-            <label for="semana" class="form-label">Semana</label>
-            <select class="form-select" id="semana">
-                <option>Semana 1</option>
-                <option>Semana 2</option>
-                <option>Semana 3</option>
-                <option>Semana 4</option>
-            </select>
-        </div>
-        <button type="button" class="btn btn-primary" onclick="mostrarPrediccion()">Predecir</button>
+        <button type="submit" class="btn btn-primary">Predecir</button>
     </form>
     <hr>
     <h3>Resultado de la predicción</h3>
-    <p id="resultado">Selecciona un producto, año, mes y semana para ver la predicción.</p>
+    <div id="reporte-prediccion">
+      <p id="resultado" style="font-size:1.4rem; font-weight:500;">
+          Selecciona un producto y una semana para ver la predicción.
+      </p>
+      <div id="imagen-producto"></div>
+    </div>
+    <button type="button" class="btn btn-secondary mt-3" onclick="imprimirReporte()">Generar reporte</button>
 </div>
 
+<!-- Incluye estos scripts al final del body o en tu base -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/weekSelect/weekSelect.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/weekSelect/weekSelect.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
 <script>
-function mostrarPrediccion() {
-    const producto = document.getElementById('producto').value;
-    const anio = parseInt(document.getElementById('anio').value);
-    const mes = document.getElementById('mes').value;
-    const semana = document.getElementById('semana').value;
+  let semanaSeleccionada = null;
 
-    // Obtener fecha actual
-    const fechaActual = new Date();
-    const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-    const anioActual = fechaActual.getFullYear();
-    const mesActual = meses[fechaActual.getMonth()];
-    const semanaActual = Math.ceil((fechaActual.getDate() + new Date(anio, meses.indexOf(mes), 1).getDay()) / 7);
+  function getNextMonday() {
+    const today = new Date();
+    const day = today.getDay();
+    const diff = (day === 0 ? 1 : 8 - day);
+    today.setDate(today.getDate() + diff);
+    today.setHours(0,0,0,0);
+    return today;
+  }
 
-    // Validar si la predicción es para el pasado
-    if (
-        anio < anioActual ||
-        (anio === anioActual && meses.indexOf(mes) < meses.indexOf(mesActual)) ||
-        (anio === anioActual && mes === mesActual && parseInt(semana.replace('Semana ','')) < semanaActual)
-    ) {
-        document.getElementById('resultado').innerHTML = 
-            `<span class="badge bg-danger">Solo puedes predecir semanas futuras o actuales.</span>`;
-        return;
+  function getWeekNumber(d) {
+    d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+    var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+    var weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+    return weekNo;
+  }
+
+  flatpickr("#calendario", {
+    locale: {
+      ...flatpickr.l10ns.es,
+      firstDayOfWeek: 1
+    },
+    weekNumbers: true,
+    inline: true,
+    minDate: getNextMonday(),
+    plugins: [
+      new weekSelect({})
+    ],
+    onChange: function(selectedDates, dateStr, instance) {
+      semanaSeleccionada = selectedDates[0];
     }
+  });
 
-    // Valores de ejemplo para el prototipo
+  function mostrarPrediccion() {
+    const producto = document.getElementById('producto').value;
+    const imagenDiv = document.getElementById('imagen-producto');
+    const resultado = document.getElementById('resultado');
+    if (!producto || !semanaSeleccionada) {
+      resultado.innerHTML = 
+        `<span class="badge bg-warning">Selecciona un producto y una semana futura.</span>`;
+      imagenDiv.innerHTML = "";
+      return;
+    }
+    const year = semanaSeleccionada.getFullYear();
+    const week = getWeekNumber(semanaSeleccionada);
+
     let prediccion = {
-        "Producto A": ["120", "110", "130", "125"],
-        "Producto B": ["80", "90", "85", "95"],
-        "Producto C": ["60", "70", "65", "75"]
+        "Mayonesa Alacena": [120, 110, 130, 125],
+        "Aceite Primor": [80, 90, 85, 95],
+        "Fideos Victorio": [60, 70, 65, 75]
     };
-    let semanaNum = document.getElementById('semana').selectedIndex;
-    let stock = prediccion[producto][semanaNum];
-    document.getElementById('resultado').innerHTML = 
-        `Stock estimado para <strong>${producto}</strong> en <strong>${semana}</strong> de <strong>${mes} ${anio}</strong>: <span class="badge bg-success">${stock} unidades</span>`;
-}
+    let stock = prediccion[producto][week % 4];
+
+    resultado.innerHTML = 
+        `Pedido estimado para <strong>${producto}</strong> en la semana <strong>${week}</strong> de <strong>${year}</strong>: 
+        <span class="badge bg-success" style="font-size:1.6rem; font-weight:bold; padding:10px 18px;">${stock} unidades</span>`;
+
+    let rutas = {
+      "Mayonesa Alacena": "/static/img/predicciones/prophet1.png",
+      "Aceite Primor": "/static/img/predicciones/prophet2.png",
+      "Fideos Victorio": "/static/img/predicciones/prophet3.png"
+    };
+    imagenDiv.innerHTML = `<div style="display:flex; justify-content:center; margin-top:20px;">
+      <img src="${rutas[producto]}" alt="${producto}" style="max-width:450px; width:100%; height:auto; border:1px solid #ddd; border-radius:8px; box-shadow:0 2px 8px #0001;">
+    </div>`;
+  }
+
+  function imprimirReporte() {
+    const contenido = document.getElementById('reporte-prediccion').innerHTML;
+    const ventana = window.open('', '', 'height=600,width=800');
+    ventana.document.write(`
+      <html>
+        <head>
+          <title>Reporte de Predicción</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 30px; }
+            .badge { display: inline-block; padding: 10px 18px; font-size: 1.6rem; font-weight: bold; background: #198754; color: #fff; border-radius: 0.5rem; }
+            img { max-width: 450px; width: 100%; height: auto; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 8px #0001; display: block; margin: 20px auto; }
+            p { font-size: 1.4rem; font-weight: 500; }
+          </style>
+        </head>
+        <body>
+          <h2>Reporte de Predicción de Stock Semanal</h2>
+          ${contenido}
+        </body>
+      </html>
+    `);
+    ventana.document.close();
+    ventana.focus();
+
+    // Espera a que las imágenes se carguen antes de imprimir
+    ventana.onload = function() {
+      const imgs = ventana.document.images;
+      if (imgs.length === 0) {
+        ventana.print();
+        ventana.close();
+      } else {
+        let loaded = 0;
+        for (let img of imgs) {
+          img.onload = img.onerror = function() {
+            loaded++;
+            if (loaded === imgs.length) {
+              ventana.print();
+              ventana.close();
+            }
+          };
+        }
+      }
+    };
+  }
 </script>
 {% endblock %}
