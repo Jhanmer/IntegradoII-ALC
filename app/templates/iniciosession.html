@@ -18,6 +18,8 @@
 
 	<link href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+	
 </head>
 
 <body>
@@ -40,11 +42,29 @@
 									<form>
 										<div class="mb-3">
 											<label class="form-label">Email</label>
-											<input class="form-control form-control-lg" type="email" name="email" placeholder="Enter your email" />
-										</div>
+											<input class="form-control form-control-lg" type="email" name="email" id="emailInput" placeholder="Ingresa tu correo." required />
+											<div class="invalid-feedback" id="emailInvalidFeedback">
+												El correo debe ser de dominio @alicorp.pe
+											</div>
+										</div>										
 										<div class="mb-3">
-											<label class="form-label">Contraseña</label>
-											<input class="form-control form-control-lg" type="password" name="password" placeholder="Enter your password" />
+											<label for="passwordInput" class="form-label">Contraseña</label>
+											<div class="input-group"> 
+												<input class="form-control form-control-lg" type="password" name="password" id="passwordInput" placeholder="Ingresa tu contraseña." required />
+												<button class="btn btn-outline-secondary" type="button" id="togglePassword">
+													<i class="bi bi-eye"></i> 
+												</button>
+												<div class="invalid-feedback" id="passwordInvalidFeedback">
+													Tu contraseña debe tener al menos **12 caracteres** y contener:
+													<ul>
+														<li id="policyLength">Al menos **12 caracteres**</li> 
+														<li id="policyUppercase">Al menos **1 letra mayúscula**</li> 
+														<li id="policyLowercase">Al menos **1 letra minúscula**</li>
+														<li id="policyNumber">Al menos **1 número**</li>
+														<li id="policySymbol">Al menos **1 símbolo** (ej: !@#$%^&*)</li> 
+													</ul>
+												</div>
+											</div> 
 										</div>
 										<div>
 											<div class="form-check align-items-center">
@@ -68,8 +88,128 @@
 		</div>
 	</main>
 
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 	<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+	<script>
+		const emailInput = document.getElementById('emailInput');
+		const passwordInput = document.getElementById('passwordInput');
+		const emailInvalidFeedback = document.getElementById('emailInvalidFeedback');
+		const passwordInvalidFeedback = document.getElementById('passwordInvalidFeedback');
+		const loginButton = document.getElementById('loginButton');
+		const togglePasswordButton = document.getElementById('togglePassword');
+		const loginForm = document.getElementById('loginForm'); 
+	
+		const policyLength = document.getElementById('policyLength');
+		const policyUppercase = document.getElementById('policyUppercase');
+		const policyLowercase = document.getElementById('policyLowercase');
+		const policyNumber = document.getElementById('policyNumber');
+		const policySymbol = document.getElementById('policySymbol');
+	
+		// Email debe ser @alicorp.pe)
+		const emailRegex = /^[a-zA-Z0-9._%+-]+@alicorp\.pe$/;
+	
+		const regexLength = /.{12,}/; // 12 carácteres o más
+		const regexUppercase = /[A-Z]/; // Como mínimo una letra mayúscula
+		const regexLowercase = /[a-z]/; // Como mínimo una letra mayúscula
+		const regexNumber = /\d/; // Como mínimo un número
+		const regexSymbol = /[!@#$%^&*()_+={}\[\]|\\:;"'<>,.?/~`\-]/; // Como mínimo un símbolo
+	
+		// Función para actualizar el estilo de los elementos de la lista de políticas
+		function updatePolicyListItem(element, isValid) {
+			if (isValid) {
+				element.style.color = 'green';
+				element.style.textDecoration = 'line-through';
+			} else {
+				element.style.color = 'red';
+				element.style.textDecoration = 'none';
+			}
+		}
+	
+		// Función para validar el correo electrónico
+		function validateEmail() {
+			const email = emailInput.value.trim();
+			if (emailRegex.test(email)) {
+				emailInput.classList.remove('is-invalid');
+				emailInput.classList.add('is-valid');
+				return true;
+			} else {
+				emailInput.classList.remove('is-valid');
+				emailInput.classList.add('is-invalid');
+				return false;
+			}
+		}
+	
+		// Función para validar la contraseña
+		function validatePassword() {
+			const password = passwordInput.value;
+	
+			// Revisar cada política de contraseña
+			const isLengthValid = regexLength.test(password);
+			const isUppercaseValid = regexUppercase.test(password);
+			const isLowercaseValid = regexLowercase.test(password);
+			const isNumberValid = regexNumber.test(password);
+			const isSymbolValid = regexSymbol.test(password);
+	
+			// Actualizar el estado de cada política en la interfaz
+			updatePolicyListItem(policyLength, isLengthValid);
+			updatePolicyListItem(policyUppercase, isUppercaseValid);
+			updatePolicyListItem(policyLowercase, isLowercaseValid);
+			updatePolicyListItem(policyNumber, isNumberValid);
+			updatePolicyListItem(policySymbol, isSymbolValid);
+	
+			// Determinar si la contraseña es válida en general
+			const isPasswordOverallValid = isLengthValid && isUppercaseValid && isLowercaseValid && isNumberValid && isSymbolValid;
+	
+			if (isPasswordOverallValid) {
+				passwordInput.classList.remove('is-invalid');
+				passwordInput.classList.add('is-valid');
+				return true;
+			} else {
+				passwordInput.classList.remove('is-valid');
+				passwordInput.classList.add('is-invalid'); // Esto hace que el borde del input se vuelva rojo
+				return false;
+			}
+		}
+	
+		// Función  para actualizar el estado del botón de inicio de sesión
+		function updateLoginButtonState() {
+			const isEmailValid = validateEmail();
+			const isPasswordValid = validatePassword();
+	
+			if (isEmailValid && isPasswordValid) {
+				loginButton.removeAttribute('disabled');
+			} else {
+				loginButton.setAttribute('disabled', 'disabled');
+			}
+		}
+	
+		// Manejar el evento de clic en el botón de alternar contraseña
+		togglePasswordButton.addEventListener('click', function() {
+			const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+			passwordInput.setAttribute('type', type);
+	
+			const icon = this.querySelector('i');
+			icon.classList.toggle('bi-eye');
+			icon.classList.toggle('bi-eye-slash');
+		});
+	
+		emailInput.addEventListener('input', updateLoginButtonState);
+		passwordInput.addEventListener('input', updateLoginButtonState);
 
+		loginForm.addEventListener('submit', function(event) {
+			if (!validateEmail() || !validatePassword()) {
+				event.preventDefault();
+				event.stopPropagation();
+			} else {
+				alert('Formulario válido. ¡Iniciando sesión!');
+			}
+		}, false);
+	
+		document.addEventListener('DOMContentLoaded', () => {
+			updateLoginButtonState(); 
+		});
+	</script>
+</script>
 </body>
 
 </html>

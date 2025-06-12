@@ -9,7 +9,7 @@ def get_db_connection():
         connection = psycopg2.connect(
             host='localhost',
             user='postgres',
-            password='12345',
+            password='123',
             dbname='stock_system'
         )
         # --- AÑADE ESTA LÍNEA AQUÍ ---

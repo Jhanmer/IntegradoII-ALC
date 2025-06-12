@@ -41,6 +41,7 @@
 					<div class="col-md-6">
 						<label>Marca</label>
 						<select name="marca" class="form-select">
+							<option value="" selected disabled>Seleccionar</option>
 							{% for id, nombre in marcas %}
 								<option value="{{ id }}">{{ nombre }}</option>
 							{% endfor %}
@@ -49,6 +50,7 @@
 					<div class="col-md-6">
 						<label>Proveedor</label>
 						<select name="proveedor" class="form-select">
+							<option value="" selected disabled>Seleccionar</option> 
 							{% for id, nombre in proveedores %}
 								<option value="{{ id }}">{{ nombre }}</option>
 							{% endfor %}
@@ -59,11 +61,16 @@
 				<div class="row mb-3">
 					<div class="col-md-6">
 						<label>División</label>
-						<input name="division" class="form-control">
+						<select name="division" class="form-select">
+							<option value="" selected disabled>Seleccionar</option> 
+							<option value="PGC-COMESTIBLE">PGC-COMESTIBLE</option>
+							<option value="PGC-NO COMESTIBLE">PGC-NO COMESTIBLE</option>
+						</select>
 					</div>
 					<div class="col-md-6">
 						<label>Estado</label>
 						<select name="estado" class="form-select">
+							<option value="" selected disabled>Seleccionar</option> 
 							<option value="activo">Activo</option>
 							<option value="inactivo">Inactivo</option>
 						</select>
