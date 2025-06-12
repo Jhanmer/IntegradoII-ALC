@@ -40,13 +40,15 @@ def insertar(datos):
     cur.close()
     conn.close()
 
-
-
 def insertar_marca(nombre):
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("INSERT INTO marcas (nombre) VALUES (%s)", (nombre,))
-    conn.commit()
+    # Verificar si ya existe
+    cur.execute("SELECT id FROM marcas WHERE LOWER(nombre) = LOWER(%s)", (nombre,))
+    existe = cur.fetchone()
+    if not existe:
+        cur.execute("INSERT INTO marcas (nombre) VALUES (%s)", (nombre,))
+        conn.commit()
     cur.close()
     conn.close()
 

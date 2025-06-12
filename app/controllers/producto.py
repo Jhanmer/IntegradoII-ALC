@@ -2,7 +2,12 @@
 
 from flask import Blueprint, render_template, request, redirect, url_for
 from app.models import producto as producto_model 
+from app.config import get_db_connection
+from flask import flash
+from flask import Flask
 
+app = Flask(__name__)
+app.secret_key = '12345'
 producto_bp = Blueprint('producto', __name__, url_prefix='/productos')
 
 @producto_bp.route('/', methods=['GET', 'POST'])
@@ -33,11 +38,21 @@ def index():
     proveedores=proveedores_lista
 )
 
-
 @producto_bp.route('/agregar_marca', methods=['POST'])
 def agregar_marca():
     nombre = request.form['nueva_marca']
-    producto_model.insertar_marca(nombre)
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM marcas WHERE LOWER(nombre) = LOWER(%s)", (nombre,))
+    existe = cur.fetchone()
+    if not existe:
+        cur.execute("INSERT INTO marcas (nombre) VALUES (%s)", (nombre,))
+        conn.commit()
+        flash("Marca agregada exitosamente.", "success")
+    else:
+        flash("La marca ya existe.", "warning")
+    cur.close()
+    conn.close()
     return redirect(url_for('producto.index'))
 
 @producto_bp.route('/agregar_proveedor', methods=['POST'])

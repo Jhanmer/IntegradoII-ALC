@@ -4,6 +4,8 @@ from flask import Flask, redirect, url_for
 def create_app():
     app = Flask(__name__)
 
+    app.secret_key = '12345'  # Clave secreta para sesiones y protección CSRF
+
     # --- Configuración de la aplicación ---
     app.config['DEBUG'] = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True

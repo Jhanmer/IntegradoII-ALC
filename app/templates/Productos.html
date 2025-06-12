@@ -1,14 +1,44 @@
 {% extends "layaout.html" %}
 
 {% block content %}
-<div class="container-fluid p-0">
-	<h1 class="h3 mb-3">Gestión de Inventario</h1>
 
+<div class="container-fluid p-0">
+
+	<h1 class="h3 mb-3">Gestión de Inventario</h1>
 	<!-- Formulario para agregar nueva marca -->
 	<form action="{{ url_for('producto.agregar_marca') }}" method="POST" class="d-flex mt-2 mb-4">
 		<input name="nueva_marca" class="form-control me-2" placeholder="Nueva marca" required>
 		<button class="btn btn-success" type="submit">Agregar Marca</button>
 	</form>
+	
+	{% with messages = get_flashed_messages(with_categories=true) %}
+	{% if messages %}
+		<div id="flash-container">
+		{% for category, message in messages %}
+			<div class="flash-message {{ category }}">{{ message }}</div>
+		{% endfor %}
+		</div>
+	{% endif %}
+	{% endwith %}
+	<style>
+		.flash-message {
+			padding: 10px 20px;
+			margin-bottom: 10px;
+			border-radius: 8px;
+			color: white;
+			font-weight: bold;
+			transition: opacity 1s ease-out, filter 1s ease-out;
+		}
+
+		.flash-message.success { background-color: #28a745; }
+		.flash-message.warning { background-color: #ffc107; color: black; }
+		.flash-message.error { background-color: #dc3545; }
+
+		.flash-message.fade-out {
+			opacity: 0;
+			filter: blur(5px);
+		}
+	</style>
 
 	<form action="{{ url_for('producto.agregar_proveedor') }}" method="POST" class="d-flex mt-2 mb-4">
 	<input name="nuevo_proveedor" class="form-control me-2" placeholder="Nuevo proveedor" required>
@@ -149,6 +179,14 @@
 		}
 	</script>
 
+	<script>
+		// Espera 3 segundos y luego aplica el efecto de desvanecimiento
+		setTimeout(() => {
+			document.querySelectorAll('.flash-message').forEach(msg => {
+			msg.classList.add('fade-out');
+			});
+		}, 3000);
+	</script>
 	<!-- SheetJS para exportar a Excel -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
