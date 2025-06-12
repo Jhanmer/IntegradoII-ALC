@@ -1,182 +1,175 @@
 {% extends "layaout.html" %}
 
 {% block content %}
+
 				<div class="container-fluid p-0">
 
 					<div class="mb-3">
-						<h1 class="h3 d-inline align-middle">Forms</h1>
-						<a class="badge bg-dark text-white ms-2" href="upgrade-to-pro.html">
-							Get more form examples
+						<h1 class="h3 d-inline align-middle">Registrar</h1>
+						<a class="badge bg-dark text-white ms-2" href="#">
+							Pedidos
 						</a>
 					</div>
-					<div class="row">
-						<div class="col-12 col-lg-6">
-							<div class="card">
-								<div class="card-header">
-									<h5 class="card-title mb-0">Input</h5>
-								</div>
-								<div class="card-body">
-									<input type="text" class="form-control" placeholder="Input">
-								</div>
-							</div>
-
-							<div class="card">
-								<div class="card-header">
-									<h5 class="card-title mb-0">Textarea</h5>
-								</div>
-								<div class="card-body">
-									<textarea class="form-control" rows="2" placeholder="Textarea"></textarea>
-								</div>
-							</div>
-
-							<div class="card">
-								<div class="card-header">
-									<h5 class="card-title mb-0">Checkboxes</h5>
-								</div>
-								<div class="card-body">
-									<div>
-										<label class="form-check">
-											<input class="form-check-input" type="checkbox" value="">
-											<span class="form-check-label">
-											Option one is this and that&mdash;be sure to include why it's great
-											</span>
-										</label>
-										<label class="form-check">
-											<input class="form-check-input" type="checkbox" value="" disabled>
-											<span class="form-check-label">
-											Option two is disabled
-											</span>
-										</label>
-									</div>
-									<div>
-										<label class="form-check form-check-inline">
-											<input class="form-check-input" type="checkbox" value="option1">
-											<span class="form-check-label">
-											1
-											</span>
-										</label>
-										<label class="form-check form-check-inline">
-											<input class="form-check-input" type="checkbox" value="option2">
-											<span class="form-check-label">
-											2
-											</span>
-										</label>
-										<label class="form-check form-check-inline">
-											<input class="form-check-input" type="checkbox" value="option3" disabled>
-											<span class="form-check-label">
-											3
-											</span>
-										</label>
-									</div>
-								</div>
-							</div>
-
-							<div class="card">
-								<div class="card-header">
-									<h5 class="card-title mb-0">Read only</h5>
-								</div>
-								<div class="card-body">
-									<input class="form-control" type="text" placeholder="Readonly input" readonly>
-									</div>
-								</div>
-						</div>
-
+					<form>
+						<div class="row">
 							<div class="col-12 col-lg-6">
 								<div class="card">
+									<div class="card">
+										<div class="card-header">
+											<h5 class="card-title mb-0">Supervisor</h5>
+										</div>
+										<div class="card-body">
+											<input type="text" class="form-control" placeholder="Eduardo" disabled>
+										</div>
+									</div>
 									<div class="card-header">
-										<h5 class="card-title mb-0">Radios</h5>
+										<h5 class="card-title mb-0">Productos</h5>
 									</div>
 									<div class="card-body">
-									<div>
-									<label class="form-check">
-										<input class="form-check-input" type="radio" value="option1" name="radios-example" checked>
-										<span class="form-check-label">
-											Option one is this and that&mdash;be sure to include why it's great
-										</span>
-										</label>
-										<label class="form-check">
-											<input class="form-check-input" type="radio" value="option2" name="radios-example">
-											<span class="form-check-label">
-											Option two can be something else and selecting it will deselect option one
-											</span>
-										</label>
-										<label class="form-check">
-											<input class="form-check-input" type="radio" value="option3" name="radios-example" disabled>
-											<span class="form-check-label">
-											Option three is disabled
-											</span>
-										</label>
-									</div>
-									<div>
-										<label class="form-check form-check-inline">
-											<input class="form-check-input" type="radio" name="inline-radios-example" value="option1">
-											<span class="form-check-label">
-											1
-											</span>
-										</label>
-										<label class="form-check form-check-inline">
-											<input class="form-check-input" type="radio" name="inline-radios-example" value="option2">
-											<span class="form-check-label">
-											2
-											</span>
-										</label>
-										<label class="form-check form-check-inline">
-											<input class="form-check-input" type="radio" name="inline-radios-example" value="option3" disabled>
-											<span class="form-check-label">
-											3
-											</span>
-										</label>
-									</div>
-								</div>
-							</div>
-
-							<div class="card">
-								<div class="card-header">
-									<h5 class="card-title mb-0">Selects</h5>
-								</div>
-								<div class="card-body">
-									<select class="form-select mb-3">
-										<option selected>Open this select menu</option>
-										<option>One</option>
-										<option>Two</option>
-										<option>Three</option>
-									</select>
-
-									<select multiple class="form-control">
-										<option>One</option>
-										<option>Two</option>
-										<option>Three</option>
-										<option>Four</option>
-									</select>
-								</div>
-							</div>
-
-							<div class="card">
-								<div class="card-header">
-									<h5 class="card-title mb-0">Disabled</h5>
-								</div>
-							<div class="card-body">
-							<div class="mb-3">
-								<label class="form-label">Disabled input</label>
-									<input type="text" class="form-control" placeholder="Disabled input" disabled>
-							</div>
-								<div class="mb-3">
-									<label class="form-label">Disabled select menu</label>
-										<select class="form-control" disabled>
-											<option>Disabled select</option>
+										<select class="form-select mb-3" required>
+											<option selected>Selecione un producto</option>
+											<option>Producto 1</option>
+											<option>Producto 2</option>
+											<option>Producto 3</option>
 										</select>
+									</div>
 								</div>
-									<label class="form-check">
-										<input class="form-check-input" type="checkbox" value="" disabled>
-										<span class="form-check-label">
-											Can't check this
-										</span>
-									</label>
+							</div>
+							<div class="col-12 col-lg-6">
+								<div class="card">
+									<div class="card">
+										<div class="card-header">
+											<h5 class="card-title mb-0">Selecione la cantidad</h5>
+										</div>
+										<div class="card-body">
+											<input class="form-control" type="number" name="quantity" id="quantity" min="1" max="200" step="1" required>
+										</div>
+									</div>
+									<div class="card-header">
+										<h5 class="card-title mb-0">Registrar Pedido</h5>
+									</div>
+									<div class="card-body">
+										<button class="btn btn-success">Registrar</button>
+										</div>
 								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="row">
+						<div class="col-12 col-lg-8 col-xxl-9 d-flex" style="width: 100%;">
+							<div class="card flex-fill">
+								<div class="card-header">
+
+									<h5 class="card-title mb-0">Lista de Pedidos</h5>
+								</div>
+								<table class="table table-hover my-0">
+									<thead>
+										<tr>
+											<th>Codigo Pedido</th>
+											<th>Supervisor</th>
+											<th>Nombre Producto</th>
+											<th class="d-none d-xl-table-cell">Solicitado el día:</th>
+											<th class="d-none d-xl-table-cell">Cantidad</th>
+											<th>Status</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>00001</td>
+											<td>Eduardo</td>
+											<td>Mayonesa Alacena</td>
+											<td class="d-none d-xl-table-cell">01/01/2023</td>
+											<td class="d-none d-xl-table-cell">20</td>
+											<td><span class="badge bg-success">Atendido</span></td>
+										</tr>
+										<tr>
+											<td>00002</td>
+											<td>Eduardo</td>
+											<td>Aceite Primor</td>
+											<td class="d-none d-xl-table-cell">01/01/2023</td>
+											<td class="d-none d-xl-table-cell">20</td>
+											<td><span class="badge bg-danger">Rechazado</span></td>
+										</tr>
+										<tr>
+											<td>00003</td>
+											<td>Eduardo</td>
+											<td>Fideos Victorio</td>
+											<td class="d-none d-xl-table-cell">01/01/2023</td>
+											<td class="d-none d-xl-table-cell">100</td>
+											<td><span class="badge bg-success">Atendido</span></td>
+										</tr>
+										<tr>
+											<td>00004</td>
+											<td>Eduardo</td>
+											<td>Fideos Maggi</td>
+											<td class="d-none d-xl-table-cell">01/01/2023</td>
+											<td class="d-none d-xl-table-cell">50</td>
+											<td><span class="badge bg-warning">Pendiente</span></td>
+										</tr>
+										<tr>
+											<td>00005</td>
+											<td>Miguel</td>
+											<td>Fideos Alianza</td>
+											<td class="d-none d-xl-table-cell">01/01/2023</td>
+											<td class="d-none d-xl-table-cell">50</td>
+											<td><span class="badge bg-success">Atendido</span></td>
+										</tr>
+										<tr>
+											<td>00006</td>
+											<td>Miguel</td>
+											<td>Aceite Marisol</td>
+											<td class="d-none d-xl-table-cell">01/01/2023</td>
+											<td class="d-none d-xl-table-cell">60</td>
+											<td><span class="badge bg-success">Atendido</span></td>
+										</tr>
+										<tr>
+											<td>00007</td>
+											<td>Miguel</td>
+											<td>Aceite Primor</td>
+											<td class="d-none d-xl-table-cell">01/01/2023</td>
+											<td class="d-none d-xl-table-cell">40</td>
+											<td><span class="badge bg-success">Atendido</span></td>
+										</tr>
+										<tr>
+											<td>00008</td>
+											<td>Eduardo</td>
+											<td>Lavaggi</td>
+											<td class="d-none d-xl-table-cell">01/01/2023</td>
+											<td class="d-none d-xl-table-cell">40</td>
+											<td><span class="badge bg-warning">Pendiente</span></td>
+										</tr>
+									</tbody>
+								</table>
 							</div>
 						</div>
 					</div>
-				</div>
+					<script>
+						const input = document.getElementById('quantity');
+
+						// Solo permite teclas numéricas y de control
+						input.addEventListener('keydown', function (e) {
+							const allowedKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Tab', 'Delete'];
+							if (!allowedKeys.includes(e.key) && !/^[0-9]$/.test(e.key)) {
+							e.preventDefault();
+							}
+						});
+
+						// Validación del valor y rango
+						input.addEventListener('input', function () {
+							const val = parseInt(this.value, 10);
+							
+							// Eliminar caracteres no numéricos (si se pega algo extraño)
+							this.value = this.value.replace(/[^0-9]/g, '');
+
+							if (isNaN(val) || val < 1 || val > 200) {
+							this.setCustomValidity("Solo se permite un número del 1 al 200.");
+							} else {
+							this.setCustomValidity("");
+							}
+						});
+					</script>
+
 				{% endblock %}
 
 				{% block scripts %}	

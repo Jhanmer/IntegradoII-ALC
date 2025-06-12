@@ -22,3 +22,7 @@ def iniciar_sesion():
 @main_bp.route('/dashboard') 
 def dashboard_index():
     return render_template('index.html')
+
+@main_bp.route('/gestion-pedidos') 
+def gestion_pedidos():
+    return render_template('GPedidos.html')

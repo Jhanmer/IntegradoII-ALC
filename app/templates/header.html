@@ -28,13 +28,18 @@
             
             <li class="sidebar-item {% if request.endpoint == 'pedido.index' %}active{% endif %}">
                 <a class="sidebar-link" href="{{ url_for('pedido.index') }}">
-                    <i class="align-middle" data-feather="shopping-cart"></i> <span class="align-middle">Pedidos</span>
+                    <i class="align-middle" data-feather="shopping-cart"></i> <span class="align-middle">Registrar Pedidos</span>
                 </a>
             </li>
             
             <li class="sidebar-item {% if request.endpoint == 'main.predecir_stock' %}active{% endif %}">
                 <a class="sidebar-link" href="{{ url_for('main.predecir_stock') }}">
                     <i class="align-middle" data-feather="activity"></i> <span class="align-middle">Predecir Stock</span>
+                </a>
+            </li>
+            <li class="sidebar-item {% if request.endpoint == 'gestion_pedidos.index' %}active{% endif %}">
+                <a class="sidebar-link" href="{{ url_for('main.gestion_pedidos') }}">
+                    <i class="align-middle" data-feather="shopping-bag"></i> <span class="align-middle">Listado de Pedidos</span>
                 </a>
             </li>
             
