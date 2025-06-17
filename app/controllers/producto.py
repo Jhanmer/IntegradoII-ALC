@@ -5,12 +5,14 @@ from app.models import producto as producto_model
 from app.config import get_db_connection
 from flask import flash
 from flask import Flask
+from flask_login import login_required
 
 app = Flask(__name__)
 app.secret_key = '12345'
 producto_bp = Blueprint('producto', __name__, url_prefix='/productos')
 
 @producto_bp.route('/', methods=['GET', 'POST'])
+@login_required
 def index():
     if request.method == 'POST':
         try:

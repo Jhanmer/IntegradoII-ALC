@@ -37,14 +37,18 @@
                 </a>
 
                 <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-bs-toggle="dropdown">
-                    <img src="../static/img/avatars/avatar.jpg" class="avatar img-fluid rounded me-1" alt="Charles Hall" /> <span class="text-dark">Eduardo Quiroz</span>
+                    <img src="{{ url_for('static', filename='img/avatars/avatar.jpg') }}" class="avatar img-fluid rounded me-1" alt="Avatar de usuario" />
+                    {% if current_user.is_authenticated %}
+                        <span class="text-dark">{{ current_user.nombre }}</span>
+                        <span class="text-muted small">({{ current_user.rol }})</span>
+                    {% endif %}
                 </a>
                 <div class="dropdown-menu dropdown-menu-end">
                     <a class="dropdown-item" href="{{ url_for('main.dashboard_index') }}"><i class="align-middle me-1" data-feather="user"></i> Perfil</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="{{ url_for('main.dashboard_index') }}"><i class="align-middle me-1" data-feather="settings"></i>Configuración</a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{{ url_for('main.index') }}">Cerrar sesión</a>
+                    <a class="dropdown-item" href="{{ url_for('main.logout') }}">Cerrar sesión</a>
                 </div>
             </li>
         </ul>

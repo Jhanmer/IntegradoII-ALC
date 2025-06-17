@@ -13,6 +13,8 @@ CREATE DATABASE stock_system
     CONNECTION LIMIT = -1
     IS_TEMPLATE = False;
 
+\c stock_system;
+
 -- Tabla de marcas
 CREATE TABLE marcas (
     id SERIAL PRIMARY KEY,
