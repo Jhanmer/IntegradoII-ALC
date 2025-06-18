@@ -1,5 +1,4 @@
 Flask==2.3.2
-Flask
-Flask-SQLAlchemy
-psycopg2-binary
 Flask-Login==0.6.3
+Werkzeug==2.3.7 
+psycopg2-binary==2.9.9

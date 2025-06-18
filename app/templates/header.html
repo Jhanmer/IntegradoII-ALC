@@ -19,13 +19,13 @@
             <li class="sidebar-header">
                 Gestión de Inventario
             </li>
-
+            {% if current_user.is_authenticated and current_user.rol.lower() == 'mercader' %}
             <li class="sidebar-item {% if request.endpoint == 'producto.index' %}active{% endif %}">
                 <a class="sidebar-link" href="{{ url_for('producto.index') }}">
                     <i class="align-middle" data-feather="square"></i> <span class="align-middle">Productos</span>
                 </a>
             </li>
-            
+            {% endif %}
             <li class="sidebar-item {% if request.endpoint == 'pedido.index' %}active{% endif %}">
                 <a class="sidebar-link" href="{{ url_for('pedido.index') }}">
                     <i class="align-middle" data-feather="shopping-cart"></i> <span class="align-middle">Registrar Pedidos</span>

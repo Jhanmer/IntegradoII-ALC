@@ -47,3 +47,21 @@ CREATE TABLE productos (
 select * from proveedores
 select * from marcas
 select * from productos
+
+CREATE TABLE usuario (
+    CodUsu SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    rol VARCHAR(50) NOT NULL,
+    login VARCHAR(120) UNIQUE NOT NULL,
+    password VARCHAR(60) NOT NULL,
+    estado VARCHAR(20) NOT NULL DEFAULT 'activo'
+);
+
+INSERT INTO usuario (nombre, rol, login, password, estado) VALUES
+('Juan Perez', 'administrador', 'juan@alicorp.pe', 'hash_password_admin', 'activo'),
+('Maria Lopez', 'supervisor', 'maria@alicorp.pe', 'hash_password_supervisor', 'activo'),
+('Carlos Garcia', 'mercader', 'carlos@alicorp.pe', 'hash_password_mercader', 'activo'),
+('Ana Rodriguez', 'supervisor', 'ana@alicorp.pe', 'hash_password_supervisor', 'activo');
+
+
+select * from usuario;
