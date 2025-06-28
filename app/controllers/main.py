@@ -1,12 +1,12 @@
 # app/controllers/main.py
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, abort
 from flask_login import login_user, current_user, logout_user, login_required
 from app.models.usuario import Usuario 
 from app.config import get_db_connection 
 from functools import wraps
+from urllib.parse import urlparse as url_parse # Importar para validar la URL 'next'
 
 main_bp = Blueprint('main', __name__)
-
 def role_required(allowed_roles):
     def decorator(f):
         @wraps(f)
@@ -18,39 +18,42 @@ def role_required(allowed_roles):
             user_role = current_user.rol.lower() if hasattr(current_user, 'rol') and current_user.rol else ''
 
             if user_role not in [role.lower() for role in allowed_roles]:
-                flash('No tienes permiso para acceder a esta sección.', 'danger')
-                # Puedes redirigir a una página de inicio (home.html) o a una de error
-                return redirect(url_for('main.index')) # Redirigir a la página de inicio (home.html)
+                return abort(403)
             return f(*args, **kwargs)
         return decorated_function
     return decorator
 
+
 @main_bp.route('/')
 def index():
-    return render_template('home.html') #
+    return render_template('home.html')
 
 @main_bp.route('/pedidos')
 @login_required
+@role_required(['administrador', 'supervisor', 'almacen']) 
 def pedidos():
     return render_template('Pedidos.html')
 
-@main_bp.route('/predecir-stock')
-@login_required
-def predecir_stock():
-    return render_template('predecir_stock.html')
-
 @main_bp.route('/dashboard') 
 @login_required
+@role_required(['administrador', 'supervisor', 'mercader', 'almacen'])
 def dashboard_index():
     return render_template('index.html')
 
+@main_bp.route('/predecir-stock')
+@login_required
+@role_required(['administrador', 'supervisor', 'almacen'])
+def predecir_stock():
+    return render_template('predecir_stock.html')
 @main_bp.route('/gestion-pedidos') 
 @login_required
+@role_required(['administrador', 'supervisor', 'almacen'])
 def gestion_pedidos():
     return render_template('GPedidos.html')
 
 @main_bp.route('/usuarios')
 @login_required
+@role_required(['administrador']) 
 def usuarios():
     return render_template('usuarios.html')
 
@@ -75,13 +78,21 @@ def iniciar_sesion():
                 user_data = cur.fetchone()
 
                 if user_data:
+                    # Aquí se crea la instancia de Usuario con los datos de la DB
                     user = Usuario(CodUsu=user_data[0], nombre=user_data[1], rol=user_data[2],
                                    login=user_data[3], password=user_data[4], estado=user_data[5])
 
+                    # ATENCIÓN: Esta verificación de contraseña NO usa hashing.
+                    # Esto es un riesgo de seguridad. Considera mejorarlo cuando sea posible.
                     if user.check_password(password):
                         login_user(user, remember=remember)
                         flash(f'¡Bienvenido, {user.nombre}!', 'success')
                         next_page = request.args.get('next')
+                        # Evita redirecciones a URLs externas maliciosas
+                        if next_page and url_parse(next_page).netloc != '' and \
+                           url_parse(next_page).netloc != request.host_url.split('//')[-1].split(':')[0]: # Ajuste para solo dominio
+                            flash('Redirección a URL externa bloqueada.', 'danger')
+                            return redirect(url_for('main.dashboard_index'))
                         return redirect(next_page or url_for('main.dashboard_index'))
                     else:
                         flash('Inicio de sesión fallido. Por favor, verifica tu correo y contraseña.', 'danger')

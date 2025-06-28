@@ -1,5 +1,5 @@
 # app/__init__.py
-from flask import Flask, redirect, url_for
+from flask import Flask, redirect, url_for, render_template, abort
 from flask_login import LoginManager, UserMixin 
 from app.config import get_db_connection 
 
@@ -13,7 +13,7 @@ def create_app():
     app.config['TEMPLATES_AUTO_RELOAD'] = True
 
     # --- Inicializar Flask-Login con la aplicación ---
-    login_manager.init_app(app) # Asocia LoginManager con tu instancia de Flask
+    login_manager.init_app(app) # Asocia LoginManager con instancia de Flask
     login_manager.login_view = 'main.iniciar_sesion' # Ruta a la página de login si se requiere autenticación
     login_manager.login_message_category = 'info' # Categoría para mensajes flash de login_required
 
@@ -25,14 +25,17 @@ def create_app():
     from app.controllers.usuario import user_bp # Asumiendo que tienes este controller
     app.register_blueprint(user_bp, url_prefix='/usuarios') # Registra el Blueprint de usuarios
 
-    from app.controllers.producto import producto_bp # Tu blueprint de producto
+    from app.controllers.producto import producto_bp #  blueprint de producto
     app.register_blueprint(producto_bp)
 
-    from app.controllers.pedido import pedido_bp # Tu blueprint de pedido
+    from app.controllers.pedido import pedido_bp #  blueprint de pedido
     app.register_blueprint(pedido_bp)
 
+    @app.errorhandler(403)
+    def acceso_prohibido(e):
+        return render_template('403.html'), 403
+    
     return app
-
 # --- Clase User y user_loader para Flask-Login ---
 # Esta clase y función son usadas por Flask-Login para manejar las sesiones de usuario.
 class User(UserMixin):
@@ -71,3 +74,4 @@ def load_user(user_id):
             cur.close()
         if conn:
             conn.close()
+

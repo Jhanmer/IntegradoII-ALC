@@ -14,7 +14,7 @@ CREATE DATABASE stock_system
     IS_TEMPLATE = False;
 
 \c stock_system;
-
+--MOVER HACIA LA CONEXION DE LA BASE DE DATOS
 -- Tabla de marcas
 CREATE TABLE marcas (
     id SERIAL PRIMARY KEY,
@@ -58,10 +58,10 @@ CREATE TABLE usuario (
 );
 
 INSERT INTO usuario (nombre, rol, login, password, estado) VALUES
-('Juan Perez', 'administrador', 'juan@alicorp.pe', 'hash_password_admin', 'activo'),
-('Maria Lopez', 'supervisor', 'maria@alicorp.pe', 'hash_password_supervisor', 'activo'),
-('Carlos Garcia', 'mercader', 'carlos@alicorp.pe', 'hash_password_mercader', 'activo'),
-('Ana Rodriguez', 'supervisor', 'ana@alicorp.pe', 'hash_password_supervisor', 'activo');
-
+('Yarel Auqui', 'administrador', 'yauqui@alicorp.pe', 'utp', 'activo'),
+('Eduardo Quiroz', 'supervisor', 'equiroz@alicorp.pe', 'utp', 'activo'),
+('Miguel Guillen', 'mercader', 'mguillen@alicorp.pe', 'utp', 'activo'),
+('Amir Rivero', 'supervisor', 'arivero@alicorp.pe', 'utp', 'activo');
+('Jhanmer Paucar', 'almacen', 'jpaucar@alicorp.pe', 'utp', 'activo');
 
 select * from usuario;

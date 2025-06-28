@@ -1,6 +1,6 @@
 # app/routes/producto.py
 
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for,abort
 from app.models import producto as producto_model 
 from app.config import get_db_connection
 from flask import flash
@@ -8,8 +8,6 @@ from flask import Flask
 from flask_login import login_required, current_user
 from functools import wraps
 
-app = Flask(__name__)
-app.secret_key = '12345'
 producto_bp = Blueprint('producto', __name__, url_prefix='/productos')
 
 def role_required(allowed_roles):
@@ -23,16 +21,14 @@ def role_required(allowed_roles):
             user_role = current_user.rol.lower() if hasattr(current_user, 'rol') and current_user.rol else ''
 
             if user_role not in [role.lower() for role in allowed_roles]:
-                flash('No tienes permiso para acceder a esta sección.', 'danger')
-                # Redirige a la página principal de tu aplicación si no tiene acceso
-                return redirect(url_for('main.index')) # O a 'main.dashboard_index' si es más apropiado
+                return abort(403)
             return f(*args, **kwargs)
         return decorated_function
     return decorator
 
 @producto_bp.route('/', methods=['GET', 'POST'])
 @login_required
-@role_required(['mercader'])
+@role_required(['administrador', 'supervisor', 'mercader']) 
 def index():
     if request.method == 'POST':
         try:

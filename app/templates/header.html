@@ -8,51 +8,69 @@
             <li class="sidebar-header">
                 Pages
             </li>
-
-            <li class="sidebar-item {% if request.endpoint == 'main.index' %}active{% endif %}">
+            <li class="sidebar-item {% if request.endpoint == 'main.dashboard_index' %}active{% endif %}">
                 <a class="sidebar-link" href="{{ url_for('main.dashboard_index') }}">
                     <i class="align-middle" data-feather="sliders"></i> 
                     <span class="align-middle">Panel</span>
                 </a>
             </li>
-            
+            {# Incluye: administrador, supervisor, mercader (para Productos) y almacen (para Pedidos/Predecir) #}
+            {% if current_user.is_authenticated and (
+                current_user.rol == 'administrador' or 
+                current_user.rol == 'supervisor' or
+                current_user.rol == 'mercader' or 
+                current_user.rol == 'almacen'
+            ) %}
             <li class="sidebar-header">
                 Gestión de Inventario
             </li>
-            {% if current_user.is_authenticated and current_user.rol.lower() == 'mercader' %}
+            {% endif %}
+
+            {% if current_user.is_authenticated and (current_user.rol == 'administrador' or current_user.rol == 'supervisor' or current_user.rol == 'mercader') %}
             <li class="sidebar-item {% if request.endpoint == 'producto.index' %}active{% endif %}">
                 <a class="sidebar-link" href="{{ url_for('producto.index') }}">
                     <i class="align-middle" data-feather="square"></i> <span class="align-middle">Productos</span>
                 </a>
             </li>
             {% endif %}
+
+            {% if current_user.is_authenticated and (current_user.rol == 'administrador' or current_user.rol == 'supervisor' or current_user.rol == 'almacen') %}
             <li class="sidebar-item {% if request.endpoint == 'pedido.index' %}active{% endif %}">
                 <a class="sidebar-link" href="{{ url_for('pedido.index') }}">
                     <i class="align-middle" data-feather="shopping-cart"></i> <span class="align-middle">Registrar Pedidos</span>
                 </a>
             </li>
+            {% endif %}
             
+            {% if current_user.is_authenticated and (current_user.rol == 'administrador' or current_user.rol == 'supervisor' or current_user.rol == 'almacen') %}
             <li class="sidebar-item {% if request.endpoint == 'main.predecir_stock' %}active{% endif %}">
                 <a class="sidebar-link" href="{{ url_for('main.predecir_stock') }}">
                     <i class="align-middle" data-feather="activity"></i> <span class="align-middle">Predecir Stock</span>
                 </a>
             </li>
-            <li class="sidebar-item {% if request.endpoint == 'gestion_pedidos.index' %}active{% endif %}">
+            {% endif %}
+
+            {% if current_user.is_authenticated and (current_user.rol == 'administrador' or current_user.rol == 'supervisor' or current_user.rol == 'almacen') %} 
+            <li class="sidebar-item {% if request.endpoint == 'main.gestion_pedidos' %}active{% endif %}">
                 <a class="sidebar-link" href="{{ url_for('main.gestion_pedidos') }}">
                     <i class="align-middle" data-feather="shopping-bag"></i> <span class="align-middle">Listado de Pedidos</span>
                 </a>
             </li>
+            {% endif %}
 
             <li class="sidebar-header">
                 Gestión de Usuario
             </li>
 
+            {# Gestión Usuario: Visto SOLO por Administrador #}
+            {% if current_user.is_authenticated and current_user.rol == 'administrador' %} 
             <li class="sidebar-item {% if request.endpoint == 'main.usuarios' %}active{% endif %}">
                 <a class="sidebar-link" href="{{ url_for('main.usuarios') }}">
-                    <i class="align-middle" data-feather="activity"></i> <span class="align-middle">Gestión Usuario</span>
+                    <i class="align-middle" data-feather="users"></i> <span class="align-middle">Gestión Usuario</span> {# Cambiado a 'users' para que coincida con el ícono habitual de usuarios #}
                 </a>
             </li>
+            {% endif %}
             
-            </ul>
+        </ul>
     </div>
 </nav>
