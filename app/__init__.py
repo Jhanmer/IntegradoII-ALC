@@ -31,6 +31,9 @@ def create_app():
     from app.controllers.pedido import pedido_bp #  blueprint de pedido
     app.register_blueprint(pedido_bp)
 
+    from app.controllers.panel import panel_bp
+    app.register_blueprint(panel_bp)
+
     @app.errorhandler(403)
     def acceso_prohibido(e):
         return render_template('403.html'), 403

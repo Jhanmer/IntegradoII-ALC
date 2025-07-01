@@ -38,7 +38,7 @@ def pedidos():
 @login_required
 @role_required(['administrador', 'supervisor', 'mercader', 'almacen'])
 def dashboard_index():
-    return render_template('index.html')
+    return redirect(url_for('panel.panel'))  # Redirige al dashboard real con datos del backend
 
 @main_bp.route('/predecir-stock')
 @login_required
