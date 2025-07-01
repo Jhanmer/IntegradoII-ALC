@@ -2,31 +2,63 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h1 class="mb-4">Predicción de Stock Semanal</h1>
+    <div class="d-flex align-items-center mb-4">
+        <a href="{{ url_for('main.predicciones_dashboard') }}" class="btn btn-outline-secondary me-3">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="mb-0">Predicción de Stock Semanal</h1>
+    </div>
+    
     <form onsubmit="event.preventDefault(); mostrarPrediccion();">
         <div class="mb-3">
             <label for="producto" class="form-label">Producto</label>
             <select class="form-select" id="producto">
-                <option>Mayonesa Alacena</option>
-                <option>Aceite Primor</option>
-                <option>Fideos Victorio</option>
+                <option value="">Cargando productos...</option>
             </select>
         </div>
         <div class="mb-3">
           <label class="form-label">Selecciona semana</label>
           <div id="calendario"></div>
         </div>
-        <button type="submit" class="btn btn-primary">Predecir</button>
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-chart-line"></i> Predecir
+        </button>
     </form>
+    
     <hr>
+    
     <h3>Resultado de la predicción</h3>
     <div id="reporte-prediccion">
+      <!-- Loading area -->
+      <div id="loading-prediccion" style="display: none;">
+        <div class="text-center py-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Generando predicción...</span>
+          </div>
+          <p class="mt-2">Entrenando modelo Prophet...</p>
+        </div>
+      </div>
+      
+      <!-- Resultado -->
       <p id="resultado" style="font-size:1.4rem; font-weight:500;">
           Selecciona un producto y una semana para ver la predicción.
       </p>
+      
+      <!-- Intervalo de confianza -->
+      <div id="intervalo-confianza" style="display: none;">
+        <div class="alert alert-info">
+          <strong>Intervalo de confianza (80%):</strong>
+          <span id="rango-confianza"></span>
+        </div>
+      </div>
+      
+      <!-- Imagen -->
       <div id="imagen-producto"></div>
     </div>
-    <button type="button" class="btn btn-secondary mt-3" onclick="imprimirReporte()">Generar reporte</button>
+    
+    <button type="button" class="btn btn-secondary mt-3" onclick="imprimirReporte()">
+        <i class="fas fa-print"></i> Generar reporte
+    </button>
 </div>
 
 <!-- Incluye estos scripts al final del body o en tu base -->
@@ -35,8 +67,39 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/weekSelect/weekSelect.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+
 <script>
   let semanaSeleccionada = null;
+
+  // Cargar productos al inicializar
+  document.addEventListener('DOMContentLoaded', function() {
+    cargarProductos();
+  });
+
+  async function cargarProductos() {
+    try {
+      const response = await fetch('/api/obtener-productos');
+      const result = await response.json();
+      
+      const select = document.getElementById('producto');
+      
+      if (result.success) {
+        select.innerHTML = '<option value="">Selecciona un producto</option>';
+        result.productos.forEach(producto => {
+          const option = document.createElement('option');
+          option.value = producto;
+          option.textContent = producto;
+          select.appendChild(option);
+        });
+      } else {
+        select.innerHTML = '<option value="">Error cargando productos</option>';
+        console.error('Error:', result.error);
+      }
+    } catch (error) {
+      document.getElementById('producto').innerHTML = '<option value="">Error de conexión</option>';
+      console.error('Error:', error);
+    }
+  }
 
   function getNextMonday() {
     const today = new Date();
@@ -71,38 +134,72 @@
     }
   });
 
-  function mostrarPrediccion() {
+  async function mostrarPrediccion() {
     const producto = document.getElementById('producto').value;
-    const imagenDiv = document.getElementById('imagen-producto');
+    const loadingDiv = document.getElementById('loading-prediccion');
     const resultado = document.getElementById('resultado');
+    const imagenDiv = document.getElementById('imagen-producto');
+    const intervalDiv = document.getElementById('intervalo-confianza');
+    
     if (!producto || !semanaSeleccionada) {
       resultado.innerHTML = 
         `<span class="badge bg-warning">Selecciona un producto y una semana futura.</span>`;
       imagenDiv.innerHTML = "";
+      intervalDiv.style.display = "none";
       return;
     }
-    const year = semanaSeleccionada.getFullYear();
-    const week = getWeekNumber(semanaSeleccionada);
 
-    let prediccion = {
-        "Mayonesa Alacena": [120, 110, 130, 125],
-        "Aceite Primor": [80, 90, 85, 95],
-        "Fideos Victorio": [60, 70, 65, 75]
-    };
-    let stock = prediccion[producto][week % 4];
+    // Mostrar loading
+    loadingDiv.style.display = "block";
+    resultado.innerHTML = "";
+    imagenDiv.innerHTML = "";
+    intervalDiv.style.display = "none";
 
-    resultado.innerHTML = 
-        `Pedido estimado para <strong>${producto}</strong> en la semana <strong>${week}</strong> de <strong>${year}</strong>: 
-        <span class="badge bg-success" style="font-size:1.6rem; font-weight:bold; padding:10px 18px;">${stock} unidades</span>`;
+    try {
+      const response = await fetch('/api/predecir-prophet', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          producto: producto,
+          fecha: semanaSeleccionada.toISOString().split('T')[0]
+        })
+      });
 
-    let rutas = {
-      "Mayonesa Alacena": "/static/img/predicciones/prophet1.png",
-      "Aceite Primor": "/static/img/predicciones/prophet2.png",
-      "Fideos Victorio": "/static/img/predicciones/prophet3.png"
-    };
-    imagenDiv.innerHTML = `<div style="display:flex; justify-content:center; margin-top:20px;">
-      <img src="${rutas[producto]}" alt="${producto}" style="max-width:450px; width:100%; height:auto; border:1px solid #ddd; border-radius:8px; box-shadow:0 2px 8px #0001;">
-    </div>`;
+      const result = await response.json();
+      loadingDiv.style.display = "none";
+
+      if (result.success) {
+        const year = semanaSeleccionada.getFullYear();
+        const week = getWeekNumber(semanaSeleccionada);
+
+        resultado.innerHTML = 
+          `Pedido estimado para <strong>${producto}</strong> en la semana <strong>${week}</strong> de <strong>${year}</strong>: 
+          <span class="badge bg-success" style="font-size:1.6rem; font-weight:bold; padding:10px 18px;">${result.prediccion} unidades</span>`;
+
+        // Mostrar intervalo de confianza
+        document.getElementById('rango-confianza').innerHTML = 
+          `Entre <strong>${result.confianza.lower}</strong> y <strong>${result.confianza.upper}</strong> unidades`;
+        intervalDiv.style.display = "block";
+
+        // Mostrar gráfico generado
+        if (result.grafico_url) {
+          imagenDiv.innerHTML = `
+            <div style="display:flex; justify-content:center; margin-top:20px;">
+              <img src="${result.grafico_url}?t=${Date.now()}" alt="${producto}" 
+                   style="max-width:450px; width:100%; height:auto; border:1px solid #ddd; border-radius:8px; box-shadow:0 2px 8px #0001;">
+            </div>`;
+        }
+      } else {
+        resultado.innerHTML = 
+          `<span class="badge bg-danger">Error: ${result.error}</span>`;
+      }
+    } catch (error) {
+      loadingDiv.style.display = "none";
+      resultado.innerHTML = 
+        `<span class="badge bg-danger">Error de conexión: ${error.message}</span>`;
+    }
   }
 
   function imprimirReporte() {
@@ -115,8 +212,10 @@
           <style>
             body { font-family: Arial, sans-serif; padding: 30px; }
             .badge { display: inline-block; padding: 10px 18px; font-size: 1.6rem; font-weight: bold; background: #198754; color: #fff; border-radius: 0.5rem; }
+            .alert { padding: 15px; margin-bottom: 20px; border: 1px solid transparent; border-radius: 4px; background-color: #d1ecf1; border-color: #bee5eb; color: #0c5460; }
             img { max-width: 450px; width: 100%; height: auto; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 8px #0001; display: block; margin: 20px auto; }
             p { font-size: 1.4rem; font-weight: 500; }
+            #loading-prediccion { display: none !important; }
           </style>
         </head>
         <body>

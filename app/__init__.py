@@ -7,6 +7,7 @@ def create_app():
     # --- Configuración de la aplicación ---
     app.config['DEBUG'] = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
+    app.config['SECRET_KEY'] = 'clave-secreta-para-sesiones-123'  # ← Agregar esta línea
 
     # --- ---
     from app.controllers.producto import producto_bp
@@ -19,7 +20,6 @@ def create_app():
     from app.controllers.pedido import pedido_bp
     app.register_blueprint(pedido_bp)
     # <<-- -->>
-
 
     # --- Rutas Globales o de Redirección ---
     @app.route('/')

@@ -32,8 +32,8 @@
                 </a>
             </li>
             
-            <li class="sidebar-item {% if request.endpoint == 'main.predecir_stock' %}active{% endif %}">
-                <a class="sidebar-link" href="{{ url_for('main.predecir_stock') }}">
+            <li class="sidebar-item {% if request.endpoint in ['main.predicciones_dashboard', 'main.cargar_datos', 'main.predecir_stock'] %}active{% endif %}">
+                <a class="sidebar-link" href="{{ url_for('main.predicciones_dashboard') }}">
                     <i class="align-middle" data-feather="activity"></i> <span class="align-middle">Predecir Stock</span>
                 </a>
             </li>
