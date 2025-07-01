@@ -76,6 +76,27 @@ def agregar_marca():
 @producto_bp.route('/agregar_proveedor', methods=['POST'])
 def agregar_proveedor():
     nombre = request.form.get('nuevo_proveedor')
-    if nombre:
-        producto_model.agregar_proveedor(nombre)
+    if not nombre:
+        flash("Nombre de proveedor inválido.", "danger")
+        return redirect(url_for('producto.index'))
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    try:
+        cur.execute("SELECT id FROM proveedores WHERE LOWER(nombre) = LOWER(%s)", (nombre,))
+        existe = cur.fetchone()
+
+        if not existe:
+            cur.execute("INSERT INTO proveedores (nombre) VALUES (%s)", (nombre,))
+            conn.commit()
+            flash("Proveedor agregado exitosamente.", "success")
+        else:
+            flash("El proveedor ya existe.", "warning")
+    except Exception as e:
+        flash(f"Error al agregar proveedor: {e}", "danger")
+    finally:
+        cur.close()
+        conn.close()
+
     return redirect(url_for('producto.index'))

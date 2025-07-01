@@ -127,3 +127,25 @@ INSERT INTO productos (descripcion, sku, marca_id, proveedor_id, division, estad
 ('Espárragos Verdes Frescos 500g', 'VEGE0001', NULL, (SELECT id FROM proveedores WHERE nombre = 'DanPer'), 'Vegetales Frescos', TRUE, 350, 70),
 ('Arándanos Frescos Bandeja 250g', 'FRUT0002', NULL, (SELECT id FROM proveedores WHERE nombre = 'Hortifrut Perú'), 'Frutas Frescas', TRUE, 400, 90),
 ('Tela de Algodón Pima por metro', 'TEXT0004', NULL, (SELECT id FROM proveedores WHERE nombre = 'Textil del Valle'), 'Materias Primas Textiles', TRUE, 1000, 200);
+
+INSERT INTO pedidos (supervisor_id, producto_id, cantidad, fecha) VALUES
+(1, 3, 25, '2025-06-30 08:30:00'),
+(2, 5, 40, '2025-06-30 09:15:00'),
+(4, 7, 30, '2025-06-30 10:45:00'),
+(1, 2, 20, '2025-06-30 13:00:00'),
+(5, 4, 35, '2025-06-30 15:10:00'),
+(2, 1, 18, '2025-06-30 17:25:00'),
+(3, 9, 50, '2025-07-01 08:20:00'),
+(4, 11, 45, '2025-07-01 09:50:00'),
+(1, 6, 60, '2025-07-01 11:00:00'),
+(5, 13, 55, '2025-07-01 13:30:00'),
+(2, 14, 22, '2025-07-01 14:45:00'),
+(4, 12, 33, '2025-07-01 16:00:00'),
+(3, 17, 70, '2025-07-01 18:15:00'),
+(5, 10, 48, '2025-07-02 09:10:00'),
+(1, 16, 65, '2025-07-02 11:00:00'),
+(2, 8, 28, '2025-07-02 13:25:00'),
+(3, 15, 90, '2025-07-02 15:15:00'),
+(4, 18, 42, '2025-07-02 17:05:00'),
+(2, 7, 31, '2025-07-02 18:40:00'),
+(1, 5, 37, '2025-07-02 19:20:00');

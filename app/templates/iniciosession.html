@@ -92,93 +92,95 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     <script>
-        const emailInput = document.getElementById('emailInput');
-        const passwordInput = document.getElementById('passwordInput');
-        const emailInvalidFeedback = document.getElementById('emailInvalidFeedback');
-        // Eliminamos las referencias a passwordInvalidFeedback y las políticas si las deshabilitas
-        // const passwordInvalidFeedback = document.getElementById('passwordInvalidFeedback');
-        // const policyLength = document.getElementById('policyLength');
-        // const policyUppercase = document.getElementById('policyUppercase');
-        // const policyLowercase = document.getElementById('policyLowercase');
-        // const policyNumber = document.getElementById('policyNumber');
-        // const policySymbol = document.getElementById('policySymbol');
+    const emailInput = document.getElementById('emailInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const emailInvalidFeedback = document.getElementById('emailInvalidFeedback');
+    const loginButton = document.getElementById('loginButton');
+    const togglePasswordButton = document.getElementById('togglePassword');
 
-        const loginButton = document.getElementById('loginButton'); // Referencia al botón de submit
-        const togglePasswordButton = document.getElementById('togglePassword');
-        const loginForm = document.getElementById('loginForm');
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@alicorp\.pe$/;
 
-        // Email debe ser @alicorp.pe
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@alicorp\.pe$/;
+    function validateEmail() {
+        const email = emailInput.value.trim();
 
-        // --- VALIDACIÓN DE CONTRASEÑA EN CLIENTE TEMPORALMENTE RELAJADA ---
-        // Comentamos las regex de fortaleza de contraseña por ahora
-        // const regexLength = /.{12,}/;
-        // const regexUppercase = /[A-Z]/;
-        // const regexLowercase = /[a-z]/;
-        // const regexNumber = /\d/;
-        // const regexSymbol = /[!@#$%^&*()_+={}\[\]|\\:;"'<>,.?/~`\-]/;
+        if (email === '') {
+            // Vacío: quitar cualquier clase
+            emailInput.classList.remove('is-valid', 'is-invalid');
+            emailInvalidFeedback.style.display = 'none';
+            return false;
+        }
 
-        // Función para actualizar el estilo de los elementos de la lista de políticas (ya no se usa activamente)
-        // function updatePolicyListItem(element, isValid) { ... }
-
-        // Función para validar el correo electrónico (mantenemos esta)
-        function validateEmail() {
-            const email = emailInput.value.trim();
+        if (email.includes('@')) {
             if (emailRegex.test(email)) {
                 emailInput.classList.remove('is-invalid');
                 emailInput.classList.add('is-valid');
+                emailInvalidFeedback.style.display = 'none';
                 return true;
             } else {
                 emailInput.classList.remove('is-valid');
                 emailInput.classList.add('is-invalid');
+                emailInvalidFeedback.style.display = 'block';
                 return false;
             }
+        } else {
+            // Aún no parece un correo completo: no mostrar error
+            emailInput.classList.remove('is-valid', 'is-invalid');
+            emailInvalidFeedback.style.display = 'none';
+            return false;
+        }
+    }
+
+    function validatePassword() {
+        const password = passwordInput.value.trim();
+
+        if (password === '') {
+            passwordInput.classList.remove('is-valid', 'is-invalid');
+            return false;
         }
 
-        // Función para validar la contraseña (SIMPLIFICADA)
-        function validatePassword() {
-            const password = passwordInput.value;
-            // Por ahora, solo verificamos que la contraseña no esté vacía
-            const isValid = password.length > 0;
-
-            if (isValid) {
-                passwordInput.classList.remove('is-invalid');
-                passwordInput.classList.add('is-valid');
-                return true;
-            } else {
-                passwordInput.classList.remove('is-valid');
-                passwordInput.classList.add('is-invalid');
-                return false;
-            }
-
+        if (password.length > 0) {
+            passwordInput.classList.add('is-valid');
+            passwordInput.classList.remove('is-invalid');
+            return true;
+        } else {
+            passwordInput.classList.remove('is-valid');
+            passwordInput.classList.add('is-invalid');
+            return false;
         }
+    }
 
-        // Función para actualizar el estado del botón de inicio de sesión
-        function updateLoginButtonState() {
-            const isEmailValid = validateEmail();
-            const isPasswordValid = validatePassword();
+    function updateLoginButtonState() {
+        const isEmailValid = validateEmail();
+        const isPasswordValid = validatePassword();
 
-            if (isEmailValid && isPasswordValid) {
-                loginButton.removeAttribute('disabled');
-            } else {
-                loginButton.setAttribute('disabled', 'disabled');
-            }
+        if (isEmailValid && isPasswordValid) {
+            loginButton.removeAttribute('disabled');
+        } else {
+            loginButton.setAttribute('disabled', 'disabled');
         }
+    }
 
-        togglePasswordButton.addEventListener('click', function() {
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
+    togglePasswordButton.addEventListener('click', function () {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        const icon = this.querySelector('i');
+        icon.classList.toggle('bi-eye');
+        icon.classList.toggle('bi-eye-slash');
+    });
 
-            const icon = this.querySelector('i');
-            icon.classList.toggle('bi-eye');
-            icon.classList.toggle('bi-eye-slash');
-        });
+    emailInput.addEventListener('input', () => {
+        validateEmail();
+        updateLoginButtonState();
+    });
 
-        emailInput.addEventListener('input', updateLoginButtonState);
-        passwordInput.addEventListener('input', updateLoginButtonState);
-        document.addEventListener('DOMContentLoaded', () => {
-            updateLoginButtonState();
-        });
+    passwordInput.addEventListener('input', () => {
+        validatePassword();
+        updateLoginButtonState();
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateLoginButtonState();
+    });
     </script>
 </body>
 

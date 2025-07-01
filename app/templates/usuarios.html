@@ -4,101 +4,279 @@
 <div class="container-fluid p-0">
     <h1 class="h3 mb-3"><strong>Gestión</strong> de Usuarios</h1>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">Registrar Nuevo Usuario</h5>
+    <!-- Formulario de Registro -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Registrar Nuevo Usuario</h5>
+        </div>
+        <div class="card-body">
+            <form id="userForm" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" class="form-control" id="nombre" placeholder="Nombre completo" required>
                 </div>
-                <div class="card-body">
-                    <form id="userForm" class="row g-3">
-                        <div class="col-md-4">
-                            <input type="text" class="form-control" id="nombre" placeholder="Nombre completo" required>
-                        </div>
-                        <div class="col-md-4">
-                            <input type="email" class="form-control" id="correo" placeholder="Correo electrónico" required>
-                        </div>
-                        <div class="col-md-4">
-                            <input type="password" class="form-control" id="password" placeholder="Contraseña" required>
-                        </div>
-                        <div class="col-md-4">
-                            <select id="rol" class="form-select" required>
-                                <option value="">Seleccione un rol</option>
-                                <option value="Administrador">Administrador</option>
-                                <option value="Mercader">Mercader</option>
-                                <option value="Supervisor">Supervisor</option>
-                                <option value="Jefe de almacén">Jefe de almacén</option>
-                            </select>
-                        </div>
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-primary">Registrar Usuario</button>
-                        </div>
-                    </form>
+                <div class="col-md-4">
+                    <input type="email" class="form-control" id="correo" placeholder="Correo electrónico" required>
                 </div>
-            </div>
+                <div class="col-md-4">
+                    <input type="text" class="form-control" id="password" placeholder="Contraseña (5 letras)" minlength="5" maxlength="5" required>
+                </div>
+                <div class="col-md-4">
+                    <select id="rol" class="form-select" required>
+                        <option value="">Seleccione un rol</option>
+                        <option value="Administrador">Administrador</option>
+                        <option value="Mercader">Mercader</option>
+                        <option value="Supervisor">Supervisor</option>
+                        <option value="Almacen">Almacén</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <select id="estado" class="form-select" required>
+                        <option value="activo" selected>Activo</option>
+                        <option value="inactivo">Inactivo</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <button type="button" class="btn btn-outline-secondary w-100" id="genPass">Generar Contraseña</button>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Registrar Usuario</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">Lista de Usuarios</h5>
-                </div>
-                <div class="card-body">
-                    <table class="table table-hover my-0">
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Correo</th>
-                                <th>Rol</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="userList">
-                            
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+    <!-- Tabla de Usuarios -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Lista de Usuarios</h5>
         </div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="userList">
+                    <!-- Dinámico desde JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para cambiar contraseña -->
+<div class="modal fade" id="modalPassword" tabindex="-1" aria-labelledby="modalPasswordLabel" aria-hidden="true">
+    <div class="modal-dialog">
+    <form id="formCambiarPassword" class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Cambiar Contraseña</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="userIdCambiar">
+            <label>Nueva contraseña:</label>
+            <input type="text" class="form-control" id="nuevaPassword" minlength="5" maxlength="60" required>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-success">Guardar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+        </form>
     </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const form = document.getElementById("userForm");
-        const userList = document.getElementById("userList");
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("userForm");
+    const tablaUsuarios = document.getElementById("userList");
+    const genPassBtn = document.getElementById("genPass");
+    const passwordInput = document.getElementById("password");
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const modalCambiar = new bootstrap.Modal(document.getElementById("modalPassword"));
+    const formCambiarPassword = document.getElementById("formCambiarPassword");
 
-        form.addEventListener("submit", function(e) {
-            e.preventDefault();
+    const fields = {
+        nombre: document.getElementById("nombre"),
+        correo: document.getElementById("correo"),
+        password: document.getElementById("password"),
+        rol: document.getElementById("rol"),
+        estado: document.getElementById("estado")
+    };
 
-            const nombre = document.getElementById("nombre").value.trim();
-            const correo = document.getElementById("correo").value.trim();
-            const password = document.getElementById("password").value;
-            const rol = document.getElementById("rol").value;
+    function validarCorreo(correo) {
+        return /^[a-zA-Z0-9._%+-]+@alicorp\.pe$/.test(correo);
+    }
 
-            if (!nombre || !correo || !password || !rol) return;
+    function validarCampos() {
+        let valid = true;
 
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td>${nombre}</td>
-                <td>${correo}</td>
-                <td>${rol}</td>
-                <td>
-                    <button class="btn btn-danger btn-sm" onclick="this.closest('tr').remove()">
-                        <i class="align-middle" data-feather="trash-2"></i>
-                    </button>
-                </td>
-            `;
+        // Nombre
+        if (fields.nombre.value.trim().length > 2) {
+            fields.nombre.classList.add("is-valid");
+            fields.nombre.classList.remove("is-invalid");
+        } else {
+            fields.nombre.classList.add("is-invalid");
+            fields.nombre.classList.remove("is-valid");
+            valid = false;
+        }
 
-            userList.appendChild(tr);
+        // Correo
+        if (validarCorreo(fields.correo.value.trim())) {
+            fields.correo.classList.add("is-valid");
+            fields.correo.classList.remove("is-invalid");
+        } else {
+            fields.correo.classList.add("is-invalid");
+            fields.correo.classList.remove("is-valid");
+            valid = false;
+        }
+
+        // Password
+        const pwd = fields.password.value.trim();
+        if (pwd.length === 5 && /^[A-Za-z]+$/.test(pwd)) {
+            fields.password.classList.add("is-valid");
+            fields.password.classList.remove("is-invalid");
+        } else {
+            fields.password.classList.add("is-invalid");
+            fields.password.classList.remove("is-valid");
+            valid = false;
+        }
+
+        // Rol
+        if (fields.rol.value) {
+            fields.rol.classList.add("is-valid");
+            fields.rol.classList.remove("is-invalid");
+        } else {
+            fields.rol.classList.add("is-invalid");
+            fields.rol.classList.remove("is-valid");
+            valid = false;
+        }
+
+        // Estado
+        if (fields.estado.value) {
+            fields.estado.classList.add("is-valid");
+            fields.estado.classList.remove("is-invalid");
+        } else {
+            fields.estado.classList.add("is-invalid");
+            fields.estado.classList.remove("is-valid");
+            valid = false;
+        }
+
+        submitBtn.disabled = !valid;
+        return valid;
+    }
+
+    // Escucha eventos input/change para validar en tiempo real
+    Object.values(fields).forEach(field => {
+        field.addEventListener("input", validarCampos);
+        field.addEventListener("change", validarCampos);
+    });
+
+    genPassBtn.addEventListener("click", () => {
+        fetch("/usuarios/generar_password")
+            .then(res => res.json())
+            .then(data => {
+                passwordInput.value = data.password;
+                validarCampos(); // volver a validar
+            });
+    });
+
+    form.addEventListener("submit", e => {
+        e.preventDefault();
+        if (!validarCampos()) return;
+
+        const nuevoUsuario = {
+            nombre: fields.nombre.value.trim(),
+            login: fields.correo.value.trim(),
+            password: fields.password.value.trim(),
+            rol: fields.rol.value,
+            estado: fields.estado.value
+        };
+
+        fetch("/usuarios/registrar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(nuevoUsuario)
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.mensaje || data.error);
+            cargarUsuarios();
             form.reset();
-
-            feather.replace();
+            Object.values(fields).forEach(f => f.classList.remove("is-valid", "is-invalid"));
+            submitBtn.disabled = true;
         });
     });
+
+    function cargarUsuarios() {
+        fetch("/usuarios/listar")
+            .then(res => res.json())
+            .then(data => {
+                tablaUsuarios.innerHTML = "";
+                data.forEach(usuario => {
+                    tablaUsuarios.innerHTML += `
+                        <tr>
+                            <td>${usuario.nombre}</td>
+                            <td>${usuario.login}</td>
+                            <td>${usuario.rol}</td>
+                            <td>
+                                <select onchange="cambiarEstado(${usuario.CodUsu}, this.value)" class="form-select form-select-sm ${usuario.estado === 'activo' ? 'bg-success text-white' : 'bg-danger text-white'}">
+                                    <option value="activo" ${usuario.estado === 'activo' ? 'selected' : ''}>Activo</option>
+                                    <option value="inactivo" ${usuario.estado === 'inactivo' ? 'selected' : ''}>Inactivo</option>
+                                </select>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-warning me-1" onclick="abrirModalCambiar(${usuario.CodUsu})">Cambiar contraseña</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            });
+    }
+
+    window.abrirModalCambiar = (id) => {
+        document.getElementById("userIdCambiar").value = id;
+        modalCambiar.show();
+    };
+
+    formCambiarPassword.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const userId = document.getElementById("userIdCambiar").value;
+        const nuevaPassword = document.getElementById("nuevaPassword").value;
+
+        fetch("/usuarios/cambiar_password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: userId, nuevaPassword })
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.mensaje || data.error);
+            modalCambiar.hide();
+        });
+    });
+
+    window.cambiarEstado = (id, nuevoEstado) => {
+        fetch("/usuarios/cambiar_estado", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: id, estado: nuevoEstado })
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.mensaje || data.error);
+            cargarUsuarios();
+        });
+    }
+
+    cargarUsuarios();
+    validarCampos(); // Estado inicial
+});
 </script>
 {% endblock %}
