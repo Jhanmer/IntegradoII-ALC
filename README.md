@@ -1,3 +1,5 @@
-Por favor,
-instalar los "requeriments.txt"
-Luego ejecuta pe causa: python run.py
+Instala las dependencias
+pip install -r requirements.txt
+
+Ejecuta la aplicación
+python run.py

@@ -1,86 +1,145 @@
 {% extends "layaout.html" %}
 
 {% block content %}
-
 <div class="container-fluid p-0">
+	<h1 class="h3 mb-4">Gestión de Inventario</h1>
 
-	<h1 class="h3 mb-3">Gestión de Inventario</h1>
-	<!-- Formulario para agregar nueva marca -->
-	<form action="{{ url_for('producto.agregar_marca') }}" method="POST" class="d-flex mt-2 mb-4">
-		<input name="nueva_marca" class="form-control me-2" placeholder="Nueva marca" required>
-		<button class="btn btn-success" type="submit">Agregar Marca</button>
-	</form>
-	
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	{% with messages = get_flashed_messages(with_categories=true) %}
-	{% if messages %}
-		<div id="flash-container">
 		{% for category, message in messages %}
-			<div class="flash-message {{ category }}">{{ message }}</div>
+			<script>
+				Swal.fire({
+					icon: "{{ 'success' if category == 'success' else 'warning' if category == 'warning' else 'error' }}",
+					title: "{{ message }}",
+					showConfirmButton: false,
+					timer: 2500
+				});
+			</script>
 		{% endfor %}
-		</div>
-	{% endif %}
 	{% endwith %}
-	<style>
-		.flash-message {
-			padding: 10px 20px;
-			margin-bottom: 10px;
-			border-radius: 8px;
-			color: white;
-			font-weight: bold;
-			transition: opacity 1s ease-out, filter 1s ease-out;
-		}
 
-		.flash-message.success { background-color: #28a745; }
-		.flash-message.warning { background-color: #ffc107; color: black; }
-		.flash-message.error { background-color: #dc3545; }
-
-		.flash-message.fade-out {
-			opacity: 0;
-			filter: blur(5px);
-		}
-	</style>
-
-	<form action="{{ url_for('producto.agregar_proveedor') }}" method="POST" class="d-flex mt-2 mb-4">
-	<input name="nuevo_proveedor" class="form-control me-2" placeholder="Nuevo proveedor" required>
-	<button class="btn btn-success" type="submit">Agregar Proveedor</button>
-	</form>
-
-
-	<!-- Formulario para agregar producto -->
-	<div class="card mb-4">
-		<div class="card-header">
-			<h5 class="card-title">Agregar Producto</h5>
+	<!-- Actualizar producto existente -->
+	<div class="card shadow-sm rounded-4 mb-4 border-0">
+		<div class="card-header bg-light border-bottom-0 rounded-top-4">
+			<h5 class="mb-0 fw-semibold text-primary">📦 Actualizar Producto Existente</h5>
 		</div>
 		<div class="card-body">
-			<form action="{{ url_for('producto.index') }}" method="POST">
-				<div class="row mb-3">
+			<form method="POST" action="{{ url_for('producto.actualizar_producto') }}">
+				<div class="row g-3 align-items-end">
 					<div class="col-md-6">
-						<label for="descripcion">Descripción</label>
-						<input name="descripcion" id="descripcion" class="form-control" required>
+						<label for="sku_existente" class="form-label fw-bold">Producto Existente</label>
+						<select id="sku_existente" name="sku_existente" class="form-select shadow-sm" required>
+							<option disabled selected>Seleccione un producto</option>
+							{% for sku, descripcion in productos_descripciones %}
+								<option value="{{ sku }}">{{ descripcion }}</option>
+							{% endfor %}
+						</select>
 					</div>
-					<div class="col-md-6">
-						<label for="sku">SKU</label>
-						<div class="input-group">
-							<input id="sku" name="sku" class="form-control" readonly>
-							<button type="button" class="btn btn-outline-secondary" onclick="generarSKU()">Generar</button>
-						</div>
+					<div class="col-md-3">
+						<label for="nuevo_oh_actualizar" class="form-label fw-bold">Nuevo OH</label>
+						<input id="nuevo_oh_actualizar" type="number" name="nuevo_oh_actualizar" class="form-control shadow-sm" value="0" min="0">
+					</div>
+					<div class="col-md-3 d-grid">
+						<button class="btn btn-warning fw-bold shadow-sm" type="submit">
+							<i class="bi bi-arrow-repeat me-1"></i>Actualizar
+						</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Agregar nueva marca -->
+	<div class="card shadow-sm rounded-4 mb-4 border-0">
+		<div class="card-header bg-light border-bottom-0 rounded-top-4">
+			<h6 class="mb-0 fw-semibold text-success">➕ Agregar Nueva Marca</h6>
+		</div>
+		<div class="card-body">
+			<form action="{{ url_for('producto.agregar_marca') }}" method="POST" class="row g-2 align-items-end">
+				<div class="col-md-9">
+					<label for="nueva_marca" class="form-label fw-bold">Nombre de la Marca</label>
+					<input id="nueva_marca" name="nueva_marca" class="form-control shadow-sm" placeholder="Ej. Nike" required>
+				</div>
+				<div class="col-md-3 d-grid">
+					<button class="btn btn-success fw-bold shadow-sm" type="submit">
+						<i class="bi bi-plus-circle me-1"></i>Agregar Marca
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Agregar nuevo proveedor -->
+	<div class="card shadow-sm rounded-4 mb-4 border-0">
+		<div class="card-header bg-light border-bottom-0 rounded-top-4">
+			<h6 class="mb-0 fw-semibold text-primary">➕ Agregar Nuevo Proveedor</h6>
+		</div>
+		<div class="card-body">
+			<form action="{{ url_for('producto.agregar_proveedor') }}" method="POST" class="row g-2 align-items-end">
+				<div class="col-md-9">
+					<label for="nuevo_proveedor" class="form-label fw-bold">Nombre del Proveedor</label>
+					<input id="nuevo_proveedor" name="nuevo_proveedor" class="form-control shadow-sm" placeholder="Ej. Distribuidora XYZ" required>
+				</div>
+				<div class="col-md-3 d-grid">
+					<button class="btn btn-primary fw-bold shadow-sm" type="submit">
+						<i class="bi bi-plus-circle me-1"></i>Agregar Proveedor
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div class="card shadow-sm rounded-4 mb-4 border-0">
+		<div class="card-header bg-light rounded-top-4">
+			<h5 class="mb-0 text-primary fw-semibold">📋 Registrar Nuevo Producto</h5>
+		</div>
+		<div class="card-body">
+			<form method="POST" action="{{ url_for('producto.index') }}" id="formProducto">
+				<div class="row mb-3 align-items-end">
+					<div class="col-md-9">
+						<label for="descripcion" class="form-label fw-bold">Descripción</label>
+						<input name="descripcion" id="descripcion" class="form-control" required>
+						<div class="invalid-feedback">Ya existe un producto con esa descripción.</div>
+						<div class="valid-feedback">Descripción válida.</div>
+					</div>
+					<div class="col-md-3 d-grid">
+						<button type="button" class="btn btn-outline-primary" id="validarDescripcion">
+							<i class="bi bi-search"></i> Validar
+						</button>
 					</div>
 				</div>
 
 				<div class="row mb-3">
 					<div class="col-md-6">
-						<label>Marca</label>
-						<select name="marca" class="form-select">
-							<option value="" selected disabled>Seleccionar</option>
+						<label for="sku" class="form-label fw-bold">SKU</label>
+						<div class="input-group">
+							<input name="sku" id="sku" class="form-control" readonly required>
+							<button type="button" class="btn btn-outline-secondary" onclick="generarSKU()">Generar</button>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<label class="form-label fw-bold">División</label>
+						<select name="division" class="form-select" required>
+							<option value="PGC-COMESTIBLE">PGC-COMESTIBLE</option>
+							<option value="PGC-NO COMESTIBLE">PGC-NO COMESTIBLE</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="row mb-3">
+					<div class="col-md-6">
+						<label class="form-label fw-bold">Marca</label>
+						<select name="marca" class="form-select" required>
+							<option disabled selected>Seleccionar</option>
 							{% for id, nombre in marcas %}
 								<option value="{{ id }}">{{ nombre }}</option>
 							{% endfor %}
 						</select>
 					</div>
 					<div class="col-md-6">
-						<label>Proveedor</label>
-						<select name="proveedor" class="form-select">
-							<option value="" selected disabled>Seleccionar</option> 
+						<label class="form-label fw-bold">Proveedor</label>
+						<select name="proveedor" class="form-select" required>
+							<option disabled selected>Seleccionar</option>
 							{% for id, nombre in proveedores %}
 								<option value="{{ id }}">{{ nombre }}</option>
 							{% endfor %}
@@ -90,53 +149,35 @@
 
 				<div class="row mb-3">
 					<div class="col-md-6">
-						<label>División</label>
-						<select name="division" class="form-select">
-							<option value="" selected disabled>Seleccionar</option> 
-							<option value="PGC-COMESTIBLE">PGC-COMESTIBLE</option>
-							<option value="PGC-NO COMESTIBLE">PGC-NO COMESTIBLE</option>
-						</select>
-					</div>
-					<div class="col-md-6">
-						<label>Estado</label>
-						<select name="estado" class="form-select">
-							<option value="" selected disabled>Seleccionar</option> 
+						<label class="form-label fw-bold">Estado</label>
+						<select name="estado" class="form-select" required>
 							<option value="activo">Activo</option>
 							<option value="inactivo">Inactivo</option>
 						</select>
 					</div>
+					<div class="col-md-3">
+						<label class="form-label fw-bold">OH Disponible</label>
+						<input name="oh_disponible" type="number" class="form-control" value="0" min="0" required>
+					</div>
+					<div class="col-md-3">
+						<label class="form-label fw-bold">Nuevo OH</label>
+						<input name="nuevo_oh" type="number" class="form-control" value="0" min="0" required>
+					</div>
 				</div>
 
-				<div class="row mb-3">
-					<div class="col-md-6">
-						<label>OH Disponible</label>
-						<input name="oh_disponible" type="number" class="form-control" value="0">
-					</div>
-					<div class="col-md-6">
-						<label>Nuevo OH</label>
-						<input name="nuevo_oh" type="number" class="form-control" value="0">
-					</div>
-				</div>
 				<div class="text-end">
-					<button class="btn btn-primary" type="submit">Agregar Producto</button>
+					<button class="btn btn-primary fw-bold" type="submit">Registrar Producto</button>
 				</div>
 			</form>
 		</div>
 	</div>
 
-	<div class="mb-3">
-		<button id="exportExcel" class="btn btn-success">Exportar a Excel</button>
-		<button id="exportPDF" class="btn btn-danger">Exportar a PDF</button>
-	</div>
-
 	<!-- Tabla de productos -->
 	<div class="card">
-		<div class="card-header">
-			<h5 class="card-title">Inventario Actual</h5>
-		</div>
+		<div class="card-header"><h5>Inventario Actual</h5></div>
 		<div class="card-body table-responsive">
-			<table class="table table-striped table-bordered align-middle">
-				<thead class="table-dark text-center">
+			<table id="tablaProductos" class="table table-bordered table-hover align-middle text-center">
+				<thead class="table-dark">
 					<tr>
 						<th>ID</th>
 						<th>Descripción</th>
@@ -147,6 +188,7 @@
 						<th>Estado</th>
 						<th>OH</th>
 						<th>Nuevo OH</th>
+						<th>Total Actual</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -161,6 +203,7 @@
 						<td>{{ 'Activo' if p[6] else 'Inactivo' }}</td>
 						<td>{{ p[7] }}</td>
 						<td>{{ p[8] }}</td>
+						<td>{{ p[7] + p[8] }}</td>
 					</tr>
 					{% endfor %}
 				</tbody>
@@ -170,41 +213,88 @@
 </div>
 {% endblock %}
 
-{% block scripts %}	
-	<script>
-		function generarSKU() {
-			const sku = Math.floor(10000000 + Math.random() * 90000000);
-			document.getElementById('sku').value = sku;
+{% block scripts %}
+<!-- Estilos -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css">
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- DataTables + Bootstrap -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<!-- Botones de exportación -->
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+
+<script>
+$(document).ready(function () {
+		$('#tablaProductos').DataTable({
+			dom: '<"d-flex justify-content-start mb-3"B>t', // Solo botones y tabla
+			paging: false,  // 👈 Elimina la paginación
+			language: {
+				url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+			},
+			buttons: [
+				{
+					extend: 'excelHtml5',
+					text: '<i class="bi bi-file-earmark-excel-fill"></i> Excel',
+					className: 'btn btn-success me-2 btn-sm'
+				},
+				{
+					extend: 'pdfHtml5',
+					text: '<i class="bi bi-filetype-pdf"></i> PDF',
+					className: 'btn btn-danger me-2 btn-sm',
+					orientation: 'landscape',
+					pageSize: 'A4'
+				},
+				{
+					extend: 'print',
+					text: '<i class="bi bi-printer-fill"></i> Imprimir',
+					className: 'btn btn-secondary btn-sm'
+				}
+			]
+		});
+	});
+
+	function generarSKU() {
+		const sku = Math.floor(10000000 + Math.random() * 90000000);
+		document.getElementById('sku').value = sku;
+	}
+
+	document.getElementById('validarDescripcion').addEventListener('click', function () {
+		const input = document.getElementById('descripcion');
+		const valor = input.value.trim();
+
+		if (!valor) {
+			input.classList.remove('is-valid');
+			input.classList.add('is-invalid');
+			return;
 		}
-	</script>
 
-	<script>
-		// Espera 3 segundos y luego aplica el efecto de desvanecimiento
-		setTimeout(() => {
-			document.querySelectorAll('.flash-message').forEach(msg => {
-			msg.classList.add('fade-out');
+		fetch(`/productos/validar_descripcion?descripcion=${encodeURIComponent(valor)}`)
+			.then(resp => resp.json())
+			.then(data => {
+				if (data.valido) {
+					input.classList.remove('is-invalid');
+					input.classList.add('is-valid');
+				} else {
+					input.classList.remove('is-valid');
+					input.classList.add('is-invalid');
+				}
+			})
+			.catch(err => {
+				console.error("Error al validar descripción:", err);
+				input.classList.remove('is-valid');
+				input.classList.add('is-invalid');
 			});
-		}, 3000);
-	</script>
-	<!-- SheetJS para exportar a Excel -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
-	<!-- jsPDF y autoTable para exportar a PDF -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-
-	<script>
-		document.getElementById('exportExcel').addEventListener('click', function () {
-			const table = document.querySelector('table');
-			const wb = XLSX.utils.table_to_book(table, { sheet: "Inventario" });
-			XLSX.writeFile(wb, "inventario.xlsx");
-		});
-
-		document.getElementById('exportPDF').addEventListener('click', function () {
-			const { jsPDF } = window.jspdf;
-			const doc = new jsPDF();
-			doc.autoTable({ html: 'table' });
-			doc.save('inventario.pdf');
-		});
-	</script>
+	});
+</script>
 {% endblock %}
