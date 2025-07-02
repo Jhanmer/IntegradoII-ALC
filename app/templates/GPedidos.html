@@ -18,139 +18,26 @@
 
 									<h5 class="card-title mb-0">Lista de Pedidos</h5>
 								</div>
-								<table class="table table-hover my-0">
+								<table class="table table-hover">
 									<thead>
 										<tr>
-											<th>Codigo Pedido</th>
-											<th>Supervisor</th>
-											<th>Nombre Producto</th>
-											<th class="d-none d-xl-table-cell">Solicitado el día:</th>
-											<th class="d-none d-xl-table-cell">Cantidad</th>
-											<th>Status</th>
-                                            <th>Actualizar Pedido</th>
+										<th>ID</th>
+										<th>Supervisor</th>
+										<th>Producto</th>
+										<th>Fecha</th>
+										<th>Cantidad</th>
 										</tr>
 									</thead>
 									<tbody>
+										{% for pedido in pedidos %}
 										<tr>
-											<td>00001</td>
-											<td>Eduardo</td>
-											<td>Mayonesa Alacena</td>
-											<td class="d-none d-xl-table-cell">01/01/2023</td>
-											<td class="d-none d-xl-table-cell">20</td>
-											<td><span class="badge bg-success">Atendido</span></td>
-                                            <td>
-                                                <select class="form-select" required>
-                                                    <option selected>Atendido</option>
-                                                    <option>Rechazado</option>
-                                                    <option>Pendiente</option>
-                                                </select>
-                                            </td>
+										<td>{{ pedido[0] }}</td>
+										<td>{{ pedido[1] }}</td>
+										<td>{{ pedido[2] }}</td>
+										<td>{{ pedido[4].strftime('%d/%m/%Y') }}</td>
+										<td>{{ pedido[3] }}</td>
 										</tr>
-										<tr>
-											<td>00002</td>
-											<td>Eduardo</td>
-											<td>Aceite Primor</td>
-											<td class="d-none d-xl-table-cell">01/01/2023</td>
-											<td class="d-none d-xl-table-cell">20</td>
-											<td><span class="badge bg-danger">Rechazado</span></td>
-                                            <td>
-                                                <select class="form-select" required>
-                                                    <option selected>Atendido</option>
-                                                    <option>Rechazado</option>
-                                                    <option>Pendiente</option>
-                                                </select>
-                                            </td>
-										</tr>
-										<tr>
-											<td>00003</td>
-											<td>Eduardo</td>
-											<td>Fideos Victorio</td>
-											<td class="d-none d-xl-table-cell">01/01/2023</td>
-											<td class="d-none d-xl-table-cell">100</td>
-											<td><span class="badge bg-success">Atendido</span></td>
-                                            <td>
-                                                <select class="form-select" required>
-                                                    <option selected>Atendido</option>
-                                                    <option>Rechazado</option>
-                                                    <option>Pendiente</option>
-                                                </select>
-                                            </td>
-										</tr>
-										<tr>
-											<td>00004</td>
-											<td>Eduardo</td>
-											<td>Fideos Maggi</td>
-											<td class="d-none d-xl-table-cell">01/01/2023</td>
-											<td class="d-none d-xl-table-cell">50</td>
-											<td><span class="badge bg-warning">Pendiente</span></td>
-                                            <td>
-                                                <select class="form-select" required>
-                                                    <option selected>Atendido</option>
-                                                    <option>Rechazado</option>
-                                                    <option>Pendiente</option>
-                                                </select>
-                                            </td>
-										</tr>
-										<tr>
-											<td>00005</td>
-											<td>Miguel</td>
-											<td>Fideos Alianza</td>
-											<td class="d-none d-xl-table-cell">01/01/2023</td>
-											<td class="d-none d-xl-table-cell">50</td>
-											<td><span class="badge bg-success">Atendido</span></td>
-                                            <td>
-                                                <select class="form-select" required>
-                                                    <option selected>Atendido</option>
-                                                    <option>Rechazado</option>
-                                                    <option>Pendiente</option>
-                                                </select>
-                                            </td>
-										</tr>
-										<tr>
-											<td>00006</td>
-											<td>Miguel</td>
-											<td>Aceite Marisol</td>
-											<td class="d-none d-xl-table-cell">01/01/2023</td>
-											<td class="d-none d-xl-table-cell">60</td>
-											<td><span class="badge bg-success">Atendido</span></td>
-                                            <td>
-                                                <select class="form-select" required>
-                                                    <option selected>Atendido</option>
-                                                    <option>Rechazado</option>
-                                                    <option>Pendiente</option>
-                                                </select>
-                                            </td>
-										</tr>
-										<tr>
-											<td>00007</td>
-											<td>Miguel</td>
-											<td>Aceite Primor</td>
-											<td class="d-none d-xl-table-cell">01/01/2023</td>
-											<td class="d-none d-xl-table-cell">40</td>
-											<td><span class="badge bg-success">Atendido</span></td>
-                                            <td>
-                                                <select class="form-select" required>
-                                                    <option selected>Atendido</option>
-                                                    <option>Rechazado</option>
-                                                    <option>Pendiente</option>
-                                                </select>
-                                            </td>
-										</tr>
-										<tr>
-											<td>00008</td>
-											<td>Eduardo</td>
-											<td>Lavaggi</td>
-											<td class="d-none d-xl-table-cell">01/01/2023</td>
-											<td class="d-none d-xl-table-cell">40</td>
-											<td><span class="badge bg-warning">Pendiente</span></td>
-                                            <td>
-                                                <select class="form-select" required>
-                                                    <option selected>Atendido</option>
-                                                    <option>Rechazado</option>
-                                                    <option>Pendiente</option>
-                                                </select>
-                                            </td>
-										</tr>
+										{% endfor %}
 									</tbody>
 								</table>
 							</div>
