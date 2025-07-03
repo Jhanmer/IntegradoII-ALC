@@ -34,7 +34,7 @@
             </li>
             {% endif %}
 
-            {% if current_user.is_authenticated and (current_user.rol == 'administrador' or current_user.rol == 'supervisor' or current_user.rol == 'almacen') %}
+            {% if current_user.is_authenticated and (current_user.rol == 'administrador' or current_user.rol == 'supervisor') %}
             <li class="sidebar-item {% if request.endpoint == 'pedido.index' %}active{% endif %}">
                 <a class="sidebar-link" href="{{ url_for('pedido.index') }}">
                     <i class="align-middle" data-feather="shopping-cart"></i> <span class="align-middle">Registrar Pedidos</span>

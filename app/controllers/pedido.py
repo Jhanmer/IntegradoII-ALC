@@ -1,11 +1,28 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, abort
 from flask_login import login_required, current_user
 from app.db import get_db
+from functools import wraps
 from datetime import datetime, timedelta
 
 pedido_bp = Blueprint('pedido', __name__, url_prefix='/pedidos')
 
+# Decorador de roles permitidos
+def role_required(allowed_roles):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if not current_user.is_authenticated:
+                flash('Debes iniciar sesión para acceder a esta página.', 'warning')
+                return redirect(url_for('main.iniciar_sesion', next=request.url))
+            user_role = current_user.rol.lower() if hasattr(current_user, 'rol') and current_user.rol else ''
+            if user_role not in [r.lower() for r in allowed_roles]:
+                return abort(403)
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+
 @pedido_bp.route('/', methods=['GET', 'POST'])
+@role_required(['administrador','supervisor'])
 @login_required
 def index():
     db = get_db()

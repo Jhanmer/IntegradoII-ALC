@@ -24,7 +24,7 @@ def role_required(allowed_roles):
 # Vista principal: productos y formularios
 @producto_bp.route('/', methods=['GET', 'POST'])
 @login_required
-@role_required(['administrador', 'supervisor', 'mercader'])
+@role_required(['administrador','mercader','supervisor'])
 def index():
     if request.method == 'POST':
         try:
@@ -74,7 +74,7 @@ def index():
 # Actualizar stock (por selección de producto existente)
 @producto_bp.route('/actualizar', methods=['POST'])
 @login_required
-@role_required(['administrador', 'supervisor', 'mercader'])
+@role_required(['administrador','mercader'])
 def actualizar_producto():
     try:
         sku = request.form['sku_existente']
@@ -89,7 +89,7 @@ def actualizar_producto():
 # Agregar nueva marca
 @producto_bp.route('/agregar_marca', methods=['POST'])
 @login_required
-@role_required(['administrador', 'supervisor'])
+@role_required(['administrador','mercader'])
 def agregar_marca():
     nombre = request.form['nueva_marca'].strip()
     
@@ -113,7 +113,7 @@ def agregar_marca():
 # Agregar nuevo proveedor
 @producto_bp.route('/agregar_proveedor', methods=['POST'])
 @login_required
-@role_required(['administrador', 'supervisor'])
+@role_required(['administrador','mercader'])
 def agregar_proveedor():
     nombre = request.form.get('nuevo_proveedor', '').strip()
     if not nombre:

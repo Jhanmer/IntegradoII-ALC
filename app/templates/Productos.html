@@ -164,10 +164,11 @@
 						<input name="nuevo_oh" type="number" class="form-control" value="0" min="0" required>
 					</div>
 				</div>
-
+            	{% if current_user.is_authenticated and current_user.rol == 'mercader' or 'administrador' %} 
 				<div class="text-end">
 					<button class="btn btn-primary fw-bold" type="submit">Registrar Producto</button>
 				</div>
+				{% endif %}
 			</form>
 		</div>
 	</div>
@@ -296,5 +297,14 @@ $(document).ready(function () {
 				input.classList.add('is-invalid');
 			});
 	});
+	document.getElementById('formProducto').addEventListener('submit', function (e) {
+	const skuInput = document.getElementById('sku');
+	if (!skuInput.value.trim()) {
+		e.preventDefault(); // Detiene el envío
+		alert("Por favor, genere un SKU antes de registrar el producto.");
+		skuInput.focus();
+	}
+});
+
 </script>
 {% endblock %}
