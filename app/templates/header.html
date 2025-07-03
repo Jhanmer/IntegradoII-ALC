@@ -51,9 +51,10 @@
             {% endif %}
 
             {% if current_user.is_authenticated and (current_user.rol == 'administrador' or current_user.rol == 'supervisor' or current_user.rol == 'almacen') %} 
-            <li class="sidebar-item {% if request.endpoint == 'main.gestion_pedidos' %}active{% endif %}">
-                <a class="sidebar-link" href="{{ url_for('main.gestion_pedidos') }}">
-                    <i class="align-middle" data-feather="shopping-bag"></i> <span class="align-middle">Listado de Pedidos</span>
+            <li class="sidebar-item {% if request.endpoint == 'listpedidos.listar_pedidos' %}active{% endif %}">
+                <a class="sidebar-link" href="{{ url_for('listpedidos.listar_pedidos') }}">
+                    <i class="align-middle" data-feather="shopping-bag"></i> 
+                    <span class="align-middle">Listado de Pedidos</span>
                 </a>
             </li>
             {% endif %}

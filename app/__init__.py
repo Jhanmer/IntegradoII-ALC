@@ -33,6 +33,9 @@ def create_app():
     from app.controllers.panel import panel_bp
     app.register_blueprint(panel_bp)
 
+    from app.controllers.listpedidos import listpedidos_bp
+    app.register_blueprint(listpedidos_bp)
+    
     # Manejo de errores personalizados
     @app.errorhandler(403)
     def acceso_prohibido(e):

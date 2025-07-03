@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user
 from app.db import get_db
-from datetime import datetime
+from datetime import datetime, timedelta
 
 pedido_bp = Blueprint('pedido', __name__, url_prefix='/pedidos')
 
@@ -11,35 +11,52 @@ def index():
     db = get_db()
     cursor = db.cursor()
 
+    # ----------------------
+    # POST: Registrar pedido
+    # ----------------------
     if request.method == 'POST':
         try:
             producto_id = int(request.form['producto_id'])
             cantidad = int(request.form['quantity'])
 
-            cursor.execute('SELECT oh_disponible FROM productos WHERE id = %s', (producto_id,))
+            # Obtener ambos stocks
+            cursor.execute('SELECT oh_disponible, nuevo_oh FROM productos WHERE id = %s', (producto_id,))
             stock = cursor.fetchone()
 
-            if stock and stock[0] >= cantidad:
-                cursor.execute(
-                    'INSERT INTO pedidos (supervisor_id, producto_id, cantidad) VALUES (%s, %s, %s)',
-                    (current_user.id, producto_id, cantidad)
-                )
-                cursor.execute(
-                    'UPDATE productos SET oh_disponible = oh_disponible - %s WHERE id = %s',
-                    (cantidad, producto_id)
-                )
-                db.commit()
-                flash('✅ Pedido registrado correctamente.', 'success')
+            if stock:
+                oh = stock[0] or 0
+                nuevo = stock[1] or 0
+                total_stock = oh + nuevo
+
+                if total_stock >= cantidad:
+                    # Insertar el pedido
+                    cursor.execute(
+                        'INSERT INTO pedidos (supervisor_id, producto_id, cantidad) VALUES (%s, %s, %s)',
+                        (current_user.CodUsu, producto_id, cantidad)
+                    )
+
+                    # Descontar SOLO del nuevo_oh
+                    cursor.execute(
+                        'UPDATE productos SET nuevo_oh = nuevo_oh - %s WHERE id = %s',
+                        (cantidad, producto_id)
+                    )
+
+                    db.commit()
+                    flash('✅ Pedido registrado correctamente.', 'success')
+                else:
+                    flash('⚠️ Stock insuficiente (disponible + nuevo ingreso).', 'danger')
             else:
-                flash('⚠️ Stock insuficiente para este producto.', 'danger')
+                flash('❌ Producto no encontrado.', 'danger')
 
         except Exception as e:
             db.rollback()
-            flash(f'❌ Error: {e}', 'danger')
+            flash(f'❌ Error al registrar el pedido: {e}', 'danger')
 
         return redirect(url_for('pedido.index'))
 
-    # --- Filtros de búsqueda ---
+    # ----------------------
+    # GET: Mostrar pedidos
+    # ----------------------
     desde = request.args.get('desde')
     hasta = request.args.get('hasta')
 
@@ -49,15 +66,20 @@ def index():
     if desde:
         filtros += " AND p.fecha >= %s"
         params.append(desde)
-    if hasta:
-        filtros += " AND p.fecha <= %s"
-        params.append(hasta)
 
-    # --- Productos activos ---
+    if hasta:
+        try:
+            hasta_dt = datetime.strptime(hasta, '%Y-%m-%d') + timedelta(days=1)
+            filtros += " AND p.fecha < %s"
+            params.append(hasta_dt.strftime('%Y-%m-%d'))
+        except ValueError:
+            flash('⚠️ Formato de fecha inválido.', 'warning')
+
+    # Productos activos
     cursor.execute('SELECT id, descripcion FROM productos WHERE estado = TRUE ORDER BY descripcion')
     productos = cursor.fetchall()
 
-    # --- Historial filtrado ---
+    # Pedidos
     cursor.execute(f'''
         SELECT p.id, u.nombre, pr.descripcion, p.cantidad, p.fecha
         FROM pedidos p
@@ -66,34 +88,92 @@ def index():
         WHERE 1=1 {filtros}
         ORDER BY p.fecha DESC
     ''', tuple(params))
-    pedidos = cursor.fetchall()
+    pedidos_raw = cursor.fetchall()
 
-    # --- Mini resumen para dashboard ---
+    pedidos = []
+    for row in pedidos_raw:
+        id, nombre, producto, cantidad, fecha = row
+        if isinstance(fecha, str):
+            try:
+                fecha = datetime.strptime(fecha, '%Y-%m-%d %H:%M:%S')
+            except:
+                fecha = datetime.now()
+        pedidos.append((id, nombre, producto, cantidad, fecha))
+
+    # Dashboard
     cursor.execute('SELECT COUNT(*), COALESCE(SUM(cantidad), 0) FROM pedidos')
     total_pedidos, total_unidades = cursor.fetchone()
 
     cursor.execute('''
-        SELECT pr.descripcion, SUM(p.cantidad) AS total
+        SELECT pr.descripcion, SUM(p.cantidad)
         FROM pedidos p
         JOIN productos pr ON p.producto_id = pr.id
         GROUP BY pr.descripcion
-        ORDER BY total DESC
+        ORDER BY SUM(p.cantidad) DESC
         LIMIT 5
     ''')
     top_productos = cursor.fetchall()
 
-    return render_template('Pedidos.html',
-                           productos=productos,
-                           pedidos=pedidos,
-                           total_pedidos=total_pedidos,
-                           total_unidades=total_unidades,
-                           top_productos=top_productos)
+    return render_template(
+        'Pedidos.html',
+        productos=productos,
+        pedidos=pedidos,
+        total_pedidos=total_pedidos,
+        total_unidades=total_unidades,
+        top_productos=top_productos
+    )
 
+
+# -----------------------------
+# API: Stock en tiempo real
+# -----------------------------
 @pedido_bp.route('/api/stock/<int:producto_id>')
 @login_required
 def api_stock(producto_id):
     db = get_db()
     cursor = db.cursor()
-    cursor.execute('SELECT oh_disponible FROM productos WHERE id = %s', (producto_id,))
+    cursor.execute('SELECT oh_disponible, nuevo_oh FROM productos WHERE id = %s', (producto_id,))
     stock = cursor.fetchone()
-    return jsonify({'stock': stock[0] if stock else 0})
+
+    total = (stock[0] or 0) + (stock[1] or 0) if stock else 0
+    return jsonify({'stock': total})
+
+
+# -----------------------------
+# AJAX: Registrar pedido
+# -----------------------------
+@pedido_bp.route('/ajax_registrar', methods=['POST'])
+@login_required
+def ajax_registrar():
+    db = get_db()
+    cursor = db.cursor()
+    try:
+        producto_id = int(request.form['producto_id'])
+        cantidad = int(request.form['quantity'])
+
+        cursor.execute('SELECT oh_disponible, nuevo_oh FROM productos WHERE id = %s', (producto_id,))
+        stock = cursor.fetchone()
+
+        if not stock:
+            return jsonify({'success': False, 'message': 'Producto no encontrado.'})
+
+        total_stock = (stock[0] or 0) + (stock[1] or 0)
+        if total_stock < cantidad:
+            return jsonify({'success': False, 'message': 'Stock insuficiente para este producto.'})
+
+        cursor.execute(
+            'INSERT INTO pedidos (supervisor_id, producto_id, cantidad) VALUES (%s, %s, %s)',
+            (current_user.CodUsu, producto_id, cantidad)
+        )
+
+        cursor.execute(
+            'UPDATE productos SET nuevo_oh = nuevo_oh - %s WHERE id = %s',
+            (cantidad, producto_id)
+        )
+
+        db.commit()
+        return jsonify({'success': True, 'message': '✅ Pedido registrado correctamente.'})
+
+    except Exception as e:
+        db.rollback()
+        return jsonify({'success': False, 'message': f'❌ Error: {str(e)}'})

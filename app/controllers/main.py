@@ -55,11 +55,11 @@ def predecir_stock():
     
     return render_template('predecir_stock.html')
 
-@main_bp.route('/gestion-pedidos')
-@login_required
-@role_required(['administrador', 'supervisor', 'almacen'])
-def gestion_pedidos():
-    return render_template('GPedidos.html')
+# @main_bp.route('/gestion-pedidos')
+# @login_required
+# @role_required(['administrador', 'supervisor', 'almacen'])
+# def gestion_pedidos():
+#     return render_template('GPedidos.html')
 
 @main_bp.route('/usuarios')
 @login_required

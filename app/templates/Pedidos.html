@@ -2,20 +2,22 @@
 
 {% block content %}
 <div class="container-fluid p-0">
-  <div class="mb-3">
-    <h1 class="h3 d-inline align-middle">Registrar</h1>
-    <a class="badge bg-dark text-white ms-2" href="#">Pedidos</a>
+  <div class="mb-3 d-flex align-items-center justify-content-between">
+    <h1 class="h3">📦 Registrar Pedido</h1>
+    <a class="badge bg-secondary text-white" href="#">Pedidos</a>
   </div>
 
-  <form method="POST">
+  <form id="pedido-form" novalidate>
     <div class="row">
+      <!-- Lado izquierdo -->
       <div class="col-lg-6">
         <div class="card mb-3">
-          <div class="card-header"><h5 class="mb-0">Supervisor</h5></div>
+          <div class="card-header bg-light"><h5 class="mb-0">👨‍💼 Supervisor</h5></div>
           <div class="card-body">
             <input type="text" class="form-control" value="{{ current_user.nombre }}" disabled>
           </div>
-          <div class="card-header"><h5 class="mb-0">Productos</h5></div>
+
+          <div class="card-header bg-light"><h5 class="mb-0">📋 Producto</h5></div>
           <div class="card-body">
             <select class="form-select" name="producto_id" id="producto-select" required>
               <option value="">Seleccione un producto</option>
@@ -23,20 +25,25 @@
               <option value="{{ p[0] }}">{{ p[1] }}</option>
               {% endfor %}
             </select>
-            <div id="stock-info" class="text-muted mt-1"></div>
+            <div class="form-text text-muted mt-1" id="stock-info"></div>
           </div>
         </div>
       </div>
 
+      <!-- Lado derecho -->
       <div class="col-lg-6">
         <div class="card mb-3">
-          <div class="card-header"><h5 class="mb-0">Cantidad</h5></div>
+          <div class="card-header bg-light"><h5 class="mb-0">🔢 Cantidad</h5></div>
           <div class="card-body">
             <input class="form-control" type="number" name="quantity" id="quantity" min="1" max="200" required>
+            <div class="invalid-feedback">Debe ingresar un número entre 1 y 200.</div>
           </div>
-          <div class="card-header"><h5 class="mb-0">Registrar Pedido</h5></div>
+
+          <div class="card-header bg-light"><h5 class="mb-0">✅ Acción</h5></div>
           <div class="card-body">
-            <button class="btn btn-success w-100">Registrar</button>
+            <button type="submit" class="btn btn-success w-100">
+              <i class="bi bi-send-check me-2"></i>Registrar Pedido
+            </button>
           </div>
         </div>
       </div>
@@ -48,101 +55,143 @@
   <!-- Filtros -->
   <form method="GET" class="row mb-4">
     <div class="col-md-3">
-      <label>Desde</label>
-      <input type="date" name="desde" class="form-control" value="{{ request.args.desde }}">
+      <label for="desde">📅 Desde</label>
+      <input type="date" name="desde" id="desde" class="form-control" value="{{ request.args.desde }}">
     </div>
     <div class="col-md-3">
-      <label>Hasta</label>
-      <input type="date" name="hasta" class="form-control" value="{{ request.args.hasta }}">
+      <label for="hasta">📅 Hasta</label>
+      <input type="date" name="hasta" id="hasta" class="form-control" value="{{ request.args.hasta }}">
     </div>
     <div class="col-md-3 align-self-end">
-      <button class="btn btn-primary">Filtrar</button>
+      <button class="btn btn-primary w-100">
+        <i class="bi bi-funnel-fill me-2"></i>Filtrar
+      </button>
     </div>
   </form>
 
   <!-- Dashboard resumen -->
-  <div class="row">
-    <div class="col-md-4">
-      <div class="card text-bg-info mb-3">
-        <div class="card-body">
-          <h5 class="card-title">Total Pedidos</h5>
-          <p class="card-text fs-4">{{ total_pedidos }}</p>
-        </div>
+<div class="row">
+  <div class="col-md-4">
+    <div class="card border-info mb-3 shadow-sm">
+      <div class="card-body text-dark">
+        <h5 class="card-title">📋 Total Pedidos</h5>
+        <p class="card-text fs-4 fw-bold">{{ total_pedidos }}</p>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="card text-bg-success mb-3">
-        <div class="card-body">
-          <h5 class="card-title">Total Unidades</h5>
-          <p class="card-text fs-4">{{ total_unidades }}</p>
-        </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card border-success mb-3 shadow-sm">
+      <div class="card-body text-dark">
+        <h5 class="card-title">📦 Total Unidades</h5>
+        <p class="card-text fs-4 fw-bold">{{ total_unidades }}</p>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="card text-bg-warning mb-3">
-        <div class="card-body">
-          <h5 class="card-title">Top Productos</h5>
-          <ul class="mb-0">
-            {% for desc, total in top_productos %}
-            <li>{{ desc }} ({{ total }})</li>
-            {% endfor %}
+  </div>
+  <div class="col-md-4">
+    <div class="card border-warning mb-3 shadow-sm">
+      <div class="card-body text-dark">
+        <h5 class="card-title">🔥 Top Productos</h5>
+        <ul class="mb-0">
+          {% for desc, total in top_productos %}
+          <li>{{ desc }} <span class="text-muted">({{ total }})</span></li>
+          {% endfor %}
           </ul>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Historial -->
+  <!-- Historial de pedidos -->
   <div class="card">
-    <div class="card-header"><h5 class="mb-0">Histórico de Pedidos</h5></div>
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Supervisor</th>
-          <th>Producto</th>
-          <th>Fecha</th>
-          <th>Cantidad</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for pedido in pedidos %}
-        <tr>
-          <td>{{ pedido[0] }}</td>
-          <td>{{ pedido[1] }}</td>
-          <td>{{ pedido[2] }}</td>
-          <td>{{ pedido[4].strftime('%d/%m/%Y') }}</td>
-          <td>{{ pedido[3] }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="card-header bg-light"><h5 class="mb-0">🕒 Histórico de Pedidos</h5></div>
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>ID</th>
+            <th>Supervisor</th>
+            <th>Producto</th>
+            <th>Fecha</th>
+            <th>Cantidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pedido in pedidos %}
+          <tr>
+            <td>{{ pedido[0] }}</td>
+            <td>{{ pedido[1] }}</td>
+            <td>{{ pedido[2] }}</td>
+            <td>{{ pedido[4].strftime('%d/%m/%Y') }}</td>
+            <td>{{ pedido[3] }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="5" class="text-center text-muted">No hay pedidos registrados en este rango.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   const input = document.getElementById('quantity');
   input.addEventListener('input', function () {
     const val = parseInt(this.value, 10);
-    this.value = this.value.replace(/[^0-9]/g, '');
-    if (isNaN(val) || val < 1 || val > 200) {
-      this.setCustomValidity("Solo se permite un número del 1 al 200.");
+    if (isNaN(val) || val < 1) {
+      this.classList.add("is-invalid");
+      this.setCustomValidity("Debe ser un número mayor a 0.");
     } else {
+      this.classList.remove("is-invalid");
       this.setCustomValidity("");
     }
   });
 
   document.getElementById('producto-select').addEventListener('change', function () {
     const productoId = this.value;
+    const stockInfo = document.getElementById('stock-info');
     if (productoId) {
       fetch(`/pedidos/api/stock/${productoId}`)
         .then(res => res.json())
         .then(data => {
-          document.getElementById('stock-info').innerText = `Stock disponible: ${data.stock}`;
+          stockInfo.innerText = `Stock disponible: ${data.stock}`;
         });
     } else {
+      stockInfo.innerText = '';
+    }
+  });
+
+  document.getElementById('pedido-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const producto_id = document.getElementById('producto-select').value;
+    const cantidad = parseInt(document.getElementById('quantity').value, 10);
+
+    if (!producto_id || isNaN(cantidad) || cantidad < 1) {
+      Swal.fire('⚠️ Campos inválidos', 'Por favor verifica la selección y cantidad.', 'warning');
+      return;
+    }
+
+    const formData = new FormData(this);
+
+    const response = await fetch("/pedidos/ajax_registrar", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      Swal.fire('✅ Pedido registrado', data.message, 'success');
+      this.reset();
       document.getElementById('stock-info').innerText = '';
+    } else {
+      Swal.fire('❌ Error', data.message, 'error');
     }
   });
 </script>
+
 {% endblock %}
