@@ -12,7 +12,7 @@
 		</div>
 
 		<div class="table-responsive">
-			<table class="table table-striped align-middle shadow-sm rounded">
+			<table id="tablaPedidos"  class="table table-bordered table-hover align-middle text-center">
 				<thead class="table-light">
 					<tr>
 						<th>#</th>
@@ -60,4 +60,56 @@
 		</div>
 	</div>
 </div>
+<!-- Estilos -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css">
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- DataTables + Bootstrap -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<!-- Botones de exportación -->
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+
+<script>
+	
+$(document).ready(function () {
+		$('#tablaPedidos').DataTable({
+			dom: '<"d-flex justify-content-start mb-3"B>t', // Solo botones y tabla
+			paging: false,  // 👈 Elimina la paginación
+			language: {
+				url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+			},
+			buttons: [
+				{
+					extend: 'excelHtml5',
+					text: '<i class="bi bi-file-earmark-excel-fill"></i> Excel',
+					className: 'btn btn-success me-2 btn-sm'
+				},
+				{
+					extend: 'pdfHtml5',
+					text: '<i class="bi bi-filetype-pdf"></i> PDF',
+					className: 'btn btn-danger me-2 btn-sm',
+					orientation: 'landscape',
+					pageSize: 'A4'
+				},
+				{
+					extend: 'print',
+					text: '<i class="bi bi-printer-fill"></i> Imprimir',
+					className: 'btn btn-secondary btn-sm'
+				}
+			]
+		});
+	});
+
+</script>
 {% endblock %}
