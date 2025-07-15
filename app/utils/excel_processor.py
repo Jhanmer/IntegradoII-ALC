@@ -56,7 +56,9 @@ class ExcelProcessor:
             estadisticas = ExcelProcessor._obtener_estadisticas(df_semanal, productos_validos)
             
             # Guardar en sesión
+            print("=== DEBUG: Antes de guardar en sesión ===")  # ← AGREGAR
             ExcelProcessor._guardar_en_sesion(df_semanal, estadisticas)
+            print("=== DEBUG: Después de guardar en sesión ===")  # ← AGREGAR
             
             # Generar preview
             preview_html = ExcelProcessor._generar_preview_html(df_semanal.head(10))
@@ -163,6 +165,10 @@ class ExcelProcessor:
     @staticmethod
     def _guardar_en_sesion(df_semanal, estadisticas):
         """Guarda datos procesados en la sesión Flask"""
+        print("=== DEBUG: Guardando en sesión ===")  # ← AGREGAR
+        print(f"df_semanal shape: {df_semanal.shape}")  # ← AGREGAR
+        print(f"productos count: {estadisticas['productos_count']}")  # ← AGREGAR
+        
         session['datos_cargados'] = True
         session['df_semanal'] = df_semanal.to_json(date_format='iso')
         session['productos_count'] = estadisticas['productos_count']
@@ -170,6 +176,9 @@ class ExcelProcessor:
         session['registros_count'] = estadisticas['registros_count']
         session['fecha_inicio'] = estadisticas['fecha_inicio']
         session['fecha_fin'] = estadisticas['fecha_fin']
+        
+        print(f"session datos_cargados after: {session.get('datos_cargados')}")  # ← AGREGAR
+        print(f"session productos_list after: {len(session.get('productos_list', []))}")  # ← AGREGAR
     
     @staticmethod
     def _generar_preview_html(df_sample):

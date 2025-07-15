@@ -45,21 +45,105 @@ def pedidos():
 def dashboard_index():
     return redirect(url_for('panel.panel'))
 
+# ========== SISTEMA DE PREDICCIONES (SIN LOGIN) ==========
+
 @main_bp.route('/predecir-stock')
-@login_required
-@role_required(['administrador', 'supervisor', 'almacen'])
 def predecir_stock():
     """Página de predicción - template actual"""
+    print(f"=== DEBUG: Session completa en predecir-stock: {dict(session)}")
+    print(f"=== DEBUG: Llegó a /predecir-stock ===")
+    print(f"session datos_cargados: {session.get('datos_cargados')}")
+    print(f"session productos_list: {session.get('productos_list')}")
+    
     if not session.get('datos_cargados'):
+        print("=== DEBUG: Redirigiendo porque no hay datos cargados ===")
         return redirect(url_for('main.predicciones_dashboard'))
     
+    print("=== DEBUG: Renderizando predecir_stock.html ===")
     return render_template('predecir_stock.html')
 
-# @main_bp.route('/gestion-pedidos')
-# @login_required
-# @role_required(['administrador', 'supervisor', 'almacen'])
-# def gestion_pedidos():
-#     return render_template('GPedidos.html')
+@main_bp.route('/predicciones')
+# @login_required  # ← COMENTADO
+# @role_required(['administrador', 'supervisor', 'almacen'])  # ← COMENTADO
+def predicciones_dashboard():
+    """Dashboard principal del sistema de predicciones"""
+    return render_template('dashboard_predicciones.html')
+
+@main_bp.route('/predicciones/cargar-datos')
+# @login_required  # ← COMENTADO
+# @role_required(['administrador', 'supervisor', 'almacen'])  # ← COMENTADO
+def cargar_datos():
+    """Página para cargar archivo Excel"""
+    return render_template('cargar_datos.html')
+
+@main_bp.route('/api/cargar-excel', methods=['POST'])
+def cargar_excel():
+    """API endpoint para procesar archivo Excel"""
+    print(f"=== DEBUG: Session completa al inicio: {dict(session)}")
+    
+    # Verificar archivo
+    if 'archivo' not in request.files:
+        return jsonify({'success': False, 'error': 'No se seleccionó ningún archivo'})
+    
+    archivo = request.files['archivo']
+    
+    if archivo.filename == '':
+        return jsonify({'success': False, 'error': 'No se seleccionó ningún archivo'})
+    
+    if not archivo.filename.lower().endswith('.xlsx'):
+        return jsonify({'success': False, 'error': 'Solo se permiten archivos .xlsx'})
+    
+    # Procesar archivo usando la clase especializada
+    resultado = ExcelProcessor.procesar_archivo(archivo)
+    
+    print(f"=== DEBUG: Session después de procesar: {dict(session)}")
+    
+    return jsonify(resultado)
+
+@main_bp.route('/api/obtener-productos')
+# @login_required  # ← COMENTADO
+# @role_required(['administrador', 'supervisor', 'almacen'])  # ← COMENTADO
+def obtener_productos():
+    """API para obtener lista de productos disponibles"""
+    if not session.get('datos_cargados'):
+        return jsonify({'success': False, 'error': 'No hay datos cargados'})
+    
+    productos = session.get('productos_list', [])
+    return jsonify({'success': True, 'productos': productos})
+
+@main_bp.route('/api/predecir-prophet', methods=['POST'])
+# @login_required  # ← COMENTADO
+# @role_required(['administrador', 'supervisor', 'almacen'])  # ← COMENTADO
+def predecir_prophet():
+    """API endpoint para generar predicción con Prophet"""
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({'success': False, 'error': 'No se enviaron datos'})
+        
+        producto = data.get('producto')
+        fecha = data.get('fecha')
+        
+        if not producto or not fecha:
+            return jsonify({'success': False, 'error': 'Producto y fecha son requeridos'})
+        
+        # Verificar que hay datos cargados
+        if not session.get('datos_cargados'):
+            return jsonify({'success': False, 'error': 'No hay datos cargados. Carga un archivo Excel primero.'})
+        
+        # Generar predicción usando Prophet
+        resultado = ProphetPredictor.predecir_producto(producto, fecha)
+        
+        return jsonify(resultado)
+        
+    except Exception as e:
+        return jsonify({
+            'success': False, 
+            'error': f'Error en el servidor: {str(e)}'
+        })
+
+# ========== RESTO DEL SISTEMA (CON LOGIN) ==========
 
 @main_bp.route('/usuarios')
 @login_required
@@ -138,82 +222,3 @@ def logout():
     logout_user()
     flash('Has cerrado sesión exitosamente.', 'info')
     return redirect(url_for('main.index'))
-
-@main_bp.route('/predicciones')
-@login_required
-@role_required(['administrador', 'supervisor', 'almacen'])
-def predicciones_dashboard():
-    """Dashboard principal del sistema de predicciones"""
-    return render_template('dashboard_predicciones.html')
-
-@main_bp.route('/predicciones/cargar-datos')
-@login_required
-@role_required(['administrador', 'supervisor', 'almacen'])
-def cargar_datos():
-    """Página para cargar archivo Excel"""
-    return render_template('cargar_datos.html')
-
-@main_bp.route('/api/cargar-excel', methods=['POST'])
-@login_required
-@role_required(['administrador', 'supervisor', 'almacen'])
-def cargar_excel():
-    """API endpoint para procesar archivo Excel"""
-    # Verificar archivo
-    if 'archivo' not in request.files:
-        return jsonify({'success': False, 'error': 'No se seleccionó ningún archivo'})
-    
-    archivo = request.files['archivo']
-    
-    if archivo.filename == '':
-        return jsonify({'success': False, 'error': 'No se seleccionó ningún archivo'})
-    
-    if not archivo.filename.lower().endswith('.xlsx'):
-        return jsonify({'success': False, 'error': 'Solo se permiten archivos .xlsx'})
-    
-    # Procesar archivo usando la clase especializada
-    resultado = ExcelProcessor.procesar_archivo(archivo)
-    
-    return jsonify(resultado)
-
-@main_bp.route('/api/obtener-productos')
-@login_required
-@role_required(['administrador', 'supervisor', 'almacen'])
-def obtener_productos():
-    """API para obtener lista de productos disponibles"""
-    if not session.get('datos_cargados'):
-        return jsonify({'success': False, 'error': 'No hay datos cargados'})
-    
-    productos = session.get('productos_list', [])
-    return jsonify({'success': True, 'productos': productos})
-
-@main_bp.route('/api/predecir-prophet', methods=['POST'])
-@login_required
-@role_required(['administrador', 'supervisor', 'almacen'])
-def predecir_prophet():
-    """API endpoint para generar predicción con Prophet"""
-    try:
-        data = request.get_json()
-        
-        if not data:
-            return jsonify({'success': False, 'error': 'No se enviaron datos'})
-        
-        producto = data.get('producto')
-        fecha = data.get('fecha')
-        
-        if not producto or not fecha:
-            return jsonify({'success': False, 'error': 'Producto y fecha son requeridos'})
-        
-        # Verificar que hay datos cargados
-        if not session.get('datos_cargados'):
-            return jsonify({'success': False, 'error': 'No hay datos cargados. Carga un archivo Excel primero.'})
-        
-        # Generar predicción usando Prophet
-        resultado = ProphetPredictor.predecir_producto(producto, fecha)
-        
-        return jsonify(resultado)
-        
-    except Exception as e:
-        return jsonify({
-            'success': False, 
-            'error': f'Error en el servidor: {str(e)}'
-        })

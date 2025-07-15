@@ -1,5 +1,6 @@
 from flask import Flask, redirect, url_for, render_template, abort
 from flask_login import LoginManager
+from flask_session import Session  # ← AGREGAR
 from app.config import get_db_connection
 from app.models.gestion import Usuario  # Usamos el nuevo modelo gestion.py
 
@@ -8,10 +9,17 @@ login_manager = LoginManager()
 def create_app():
     app = Flask(__name__)
 
-    app.secret_key = '12345'  # Cambiar por una clave segura en producción
+    # ✅ CONFIGURACIÓN MEJORADA DE SESIONES
+    app.config['SECRET_KEY'] = 'stock-system-secret-key-2025'
     app.config['DEBUG'] = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
-
+    app.config['SESSION_PERMANENT'] = False
+    app.config['SESSION_TYPE'] = 'filesystem'
+    app.config['SESSION_FILE_DIR'] = 'flask_session'  # ← AGREGAR
+    
+    # Inicializar Session
+    Session(app)  # ← AGREGAR
+    
     # Inicializar LoginManager
     login_manager.init_app(app)
     login_manager.login_view = 'main.iniciar_sesion'
